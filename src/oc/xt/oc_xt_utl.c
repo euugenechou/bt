@@ -48,9 +48,9 @@ bool oc_xt_utl_covered(
     struct Oc_wu *wu_p,
     struct Oc_xt_state *s_p,
     Oc_xt_node *node_p,
-    struct Oc_xt_key* min_key_p,
-    struct Oc_xt_key* max_key_p)
-{
+    struct Oc_xt_key *min_key_p,
+    struct Oc_xt_key *max_key_p
+) {
     struct Oc_xt_key *nd_min_key_p;
     struct Oc_xt_key *nd_max_key_p;
 
@@ -58,8 +58,10 @@ bool oc_xt_utl_covered(
     nd_max_key_p = (struct Oc_xt_key *)alloca(s_p->cfg_p->key_size);
     oc_xt_nd_max_ofs(s_p, node_p, nd_max_key_p);
 
-    return (s_p->cfg_p->key_compare(min_key_p, nd_min_key_p) >= 0 &&
-            s_p->cfg_p->key_compare(nd_max_key_p, max_key_p) >= 0);
+    return (
+        s_p->cfg_p->key_compare(min_key_p, nd_min_key_p) >= 0
+        && s_p->cfg_p->key_compare(nd_max_key_p, max_key_p) >= 0
+    );
 }
 
 /* Delete a sub-tree rooted at [addr].
@@ -71,8 +73,8 @@ bool oc_xt_utl_covered(
 void oc_xt_utl_delete_subtree_b(
     struct Oc_wu *wu_p,
     struct Oc_xt_state *s_p,
-    Oc_xt_node *node_p)
-{
+    Oc_xt_node *node_p
+) {
     /* recurse down and then delete it on the way back up.
      */
     if (!oc_xt_nd_is_leaf(s_p, node_p)) {
@@ -82,16 +84,14 @@ void oc_xt_utl_delete_subtree_b(
         Oc_xt_node *child_node_p;
         struct Oc_xt_key *dummy_key_p;
         uint64 child_addr;
-        
-        for (i=0; i< num_entries; i++) {
-            oc_xt_nd_index_get_kth(s_p, node_p, i,
-                                    &dummy_key_p,
-                                    &child_addr);
+
+        for (i = 0; i < num_entries; i++) {
+            oc_xt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &child_addr);
             child_node_p = s_p->cfg_p->node_get(wu_p, child_addr);
             oc_xt_utl_delete_subtree_b(wu_p, s_p, child_node_p);
         }
     }
-    
+
     // Delete this node
     oc_xt_nd_delete(wu_p, s_p, node_p);
 }
@@ -99,33 +99,37 @@ void oc_xt_utl_delete_subtree_b(
 /* Delete all the key-value pairs in the tree. 
  * Leave the root node empty but do not delete it. 
  */
-void oc_xt_utl_delete_all_b(
-    struct Oc_wu *wu_p,
-    struct Oc_xt_state *s_p)
-{
+void oc_xt_utl_delete_all_b(struct Oc_wu *wu_p, struct Oc_xt_state *s_p) {
     int num_entries = oc_xt_nd_num_entries(s_p, s_p->root_node_p);
 
     if (!oc_xt_nd_is_leaf(s_p, s_p->root_node_p)) {
-        // This is a full fledged tree. Remove all the sub-trees. 
+        // This is a full fledged tree. Remove all the sub-trees.
         int i;
         Oc_xt_node *child_node_p;
         struct Oc_xt_key *dummy_key_p;
         uint64 child_addr;
-        
-        for (i=0; i< num_entries; i++) {
-            oc_xt_nd_index_get_kth(s_p, s_p->root_node_p, i,
-                                    &dummy_key_p,
-                                   &child_addr);
+
+        for (i = 0; i < num_entries; i++) {
+            oc_xt_nd_index_get_kth(
+                s_p,
+                s_p->root_node_p,
+                i,
+                &dummy_key_p,
+                &child_addr
+            );
             child_node_p = s_p->cfg_p->node_get(wu_p, child_addr);
             oc_xt_utl_delete_subtree_b(wu_p, s_p, child_node_p);
         }
     }
-    
+
     // Remove all the entries from the root node
-    oc_xt_nd_remove_range_of_entries(wu_p, s_p,
-                                     s_p->root_node_p,
-                                     0, num_entries - 1);
+    oc_xt_nd_remove_range_of_entries(
+        wu_p,
+        s_p,
+        s_p->root_node_p,
+        0,
+        num_entries - 1
+    );
 }
 
 /**********************************************************************/
-

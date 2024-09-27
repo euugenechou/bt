@@ -40,7 +40,7 @@
 // The type of scheduler
 typedef enum Oc_io_sched_type {
     // For internal purposes
-    OC_IO_SCHED_FIRST, 
+    OC_IO_SCHED_FIRST,
 
     /* A back-end that uses a pool of worker threads that perform
      * synchronous IO. 
@@ -49,26 +49,26 @@ typedef enum Oc_io_sched_type {
 
     // A deterministic way of running the backend
     OC_IO_SCHED_DET,
-    
+
     // For internal purposes
-    OC_IO_SCHED_LAST,  
+    OC_IO_SCHED_LAST,
 } Oc_io_sched_type;
 
 typedef enum Oc_io_cache_policy {
-    OC_IO_CACHE_NONE,      // do not cache anything
-    OC_IO_CACHE_ALL,       // Cache data and meta-data
-    OC_IO_CACHE_META_DATA, // Cache only meta-data
+    OC_IO_CACHE_NONE,  // do not cache anything
+    OC_IO_CACHE_ALL,  // Cache data and meta-data
+    OC_IO_CACHE_META_DATA,  // Cache only meta-data
 } Oc_io_cache_policy;
 
 typedef struct Oc_io_config {
-    bool               direct_io;
-    Oc_io_sched_type   sched;
+    bool direct_io;
+    Oc_io_sched_type sched;
 
     /* In case this is the threaded back-end, determine the
      * number of threads used. 
      */
-    int              thrd_bkend_num_threads;    
-    int              thrd_bkend_size_coalesce_buf;    
+    int thrd_bkend_num_threads;
+    int thrd_bkend_size_coalesce_buf;
 } Oc_io_config;
 
 typedef struct Oc_io_stats_container {

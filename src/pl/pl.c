@@ -45,26 +45,23 @@
 
 /**********************************************************************/
 
-uint32 pl_rand_uint32(uint32 num)
-{
-    return (rand () % num);
+uint32 pl_rand_uint32(uint32 num) {
+    return (rand() % num);
 }
 
-uint32 pl_rand_uint32_r(uint32 *seed_p, uint32 num)
-{
-    return (rand_r((unsigned int*)seed_p) % num);
+uint32 pl_rand_uint32_r(uint32 *seed_p, uint32 num) {
+    return (rand_r((unsigned int *)seed_p) % num);
 }
 
 /* test that all bytes in a buffer equal byte_value.
  * return 0 if equal, -1 otherwise.
  */
-int pl_memtest(void* buf_p, uint8 byte_value, int length)
-{
+int pl_memtest(void *buf_p, uint8 byte_value, int length) {
     int i;
-    uint8* bytes_p=(uint8*)buf_p;
+    uint8 *bytes_p = (uint8 *)buf_p;
 
-    for (i=0;i<length;i++) {
-        if (bytes_p[i]!=byte_value) {
+    for (i = 0; i < length; i++) {
+        if (bytes_p[i] != byte_value) {
             return -1;
         }
     }
@@ -72,49 +69,46 @@ int pl_memtest(void* buf_p, uint8 byte_value, int length)
     return 0;
 }
 
-void pl_init(void)
-{
+void pl_init(void) {
     pl_mm_init();
 }
 
-
 static char pl_base_user_dir[100];
 
-char* pl_create_base_dir(void)
-{
-    char* user_p;
+char *pl_create_base_dir(void) {
+    char *user_p;
     char pl_base_dir[100];
-    
+
     // make base dir
 
     strcpy(pl_base_dir, "/tmp");
 
-    if ( (mkdir(pl_base_dir, 0755)) &&
-         (errno!=EEXIST) )
-    {
-        printf("error creating base directory \"%s\": errno %i\n", 
-               pl_base_dir, errno);
+    if ((mkdir(pl_base_dir, 0755)) && (errno != EEXIST)) {
+        printf(
+            "error creating base directory \"%s\": errno %i\n",
+            pl_base_dir,
+            errno
+        );
         assert(0);
     }
-    
+
     // Add user name
-    user_p = getenv("USER");  
-    assert (user_p != NULL);
+    user_p = getenv("USER");
+    assert(user_p != NULL);
     sprintf(pl_base_user_dir, "%s/%s", pl_base_dir, user_p);
-   
-    if ( (mkdir(pl_base_user_dir, 0755)) &&
-         (errno!=EEXIST) ) {
-        printf("error creating directory \"%s\" : errno %i\n", 
-               pl_base_user_dir, errno);
+
+    if ((mkdir(pl_base_user_dir, 0755)) && (errno != EEXIST)) {
+        printf(
+            "error creating directory \"%s\" : errno %i\n",
+            pl_base_user_dir,
+            errno
+        );
         assert(0);
     }
-    
+
     return pl_base_user_dir;
 }
 
-char *pl_get_base_dir(void)
-{
+char *pl_get_base_dir(void) {
     return pl_base_user_dir;
 }
-
-

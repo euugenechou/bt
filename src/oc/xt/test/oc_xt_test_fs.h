@@ -37,16 +37,14 @@
  */
 /**********************************************************************/
 #ifndef OC_XT_TEST_FS_H
-#define OC_XT_TEST_FS_H
+    #define OC_XT_TEST_FS_H
 
-#include "pl_base.h"
+    #include "pl_base.h"
 
 struct Oc_xt_test_fs_ctx;
 
 // create an FS instance
-struct Oc_xt_test_fs_ctx *oc_xt_test_fs_create(
-    char *str_desc_p,
-    bool verbose);
+struct Oc_xt_test_fs_ctx *oc_xt_test_fs_create(char *str_desc_p, bool verbose);
 
 // delete an FS instance
 //void oc_xt_test_fs_reset(struct Oc_xt_test_fs_ctx *ctx_p);
@@ -54,19 +52,22 @@ struct Oc_xt_test_fs_ctx *oc_xt_test_fs_create(
 /* allocate an extent of [len] units in free-space [ctx_p].
  * return the initial offset of the allocated extent.
  */
-uint32 oc_xt_test_fs_alloc(struct Oc_xt_test_fs_ctx *ctx_p,
-                           uint32 len);
-    
+uint32 oc_xt_test_fs_alloc(struct Oc_xt_test_fs_ctx *ctx_p, uint32 len);
+
 // deallocate an extent of [len] units in free-space [ctx_p]
-void oc_xt_test_fs_dealloc(struct Oc_xt_test_fs_ctx *ctx_p,
-                           uint32 ofs,
-                           uint32 len);
+void oc_xt_test_fs_dealloc(
+    struct Oc_xt_test_fs_ctx *ctx_p,
+    uint32 ofs,
+    uint32 len
+);
 
 /* compare two free-space instances. Return TRUE if they are equal, FALSE
  * otherwise.
  */
-bool oc_xt_test_fs_compare(struct Oc_xt_test_fs_ctx *ctx1_p,
-                           struct Oc_xt_test_fs_ctx *ctx2_p);
+bool oc_xt_test_fs_compare(
+    struct Oc_xt_test_fs_ctx *ctx1_p,
+    struct Oc_xt_test_fs_ctx *ctx2_p
+);
 
 #endif
 /**********************************************************************/

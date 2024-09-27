@@ -67,8 +67,8 @@
 /**********************************************************************/
 
 typedef struct Oc_bpt_nd_flags {
-    unsigned root:1;
-    unsigned leaf:1;
+    unsigned root : 1;
+    unsigned leaf : 1;
 } Oc_bpt_nd_flags;
 
 typedef struct Oc_bpt_nd_hdr {
@@ -86,27 +86,28 @@ typedef struct Oc_bpt_nd_hdr_root {
 /**********************************************************************/
 // some utilities
 
-static inline struct Oc_bpt_key* oc_bpt_nd_key_array_kth(
+static inline struct Oc_bpt_key *oc_bpt_nd_key_array_kth(
     struct Oc_bpt_state *s_p,
-    struct Oc_bpt_key* key_array,
-    int k)
-{
-    return (struct Oc_bpt_key*) ((char*)key_array + s_p->cfg_p->key_size * k);
+    struct Oc_bpt_key *key_array,
+    int k
+) {
+    return (struct Oc_bpt_key *)((char *)key_array + s_p->cfg_p->key_size * k);
 }
 
-static inline struct Oc_bpt_data* oc_bpt_nd_data_array_kth(
+static inline struct Oc_bpt_data *oc_bpt_nd_data_array_kth(
     struct Oc_bpt_state *s_p,
-    struct Oc_bpt_data* data_array,
-    int k)
-{
-    return (struct Oc_bpt_data*) ((char*)data_array + s_p->cfg_p->data_size * k);
+    struct Oc_bpt_data *data_array,
+    int k
+) {
+    return (struct Oc_bpt_data *)((char *)data_array + s_p->cfg_p->data_size * k
+    );
 }
 
 static inline Oc_bpt_node *oc_bpt_nd_get_for_read(
-    struct Oc_wu *wu_p, 
+    struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    uint64 addr)
-{
+    uint64 addr
+) {
     return s_p->cfg_p->node_get_sl(wu_p, addr);
 }
 
@@ -114,39 +115,40 @@ Oc_bpt_node *oc_bpt_nd_get_for_write(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     uint64 addr,
-    Oc_bpt_node * father_node_p_io,
-    int idx_in_father);    
+    Oc_bpt_node *father_node_p_io,
+    int idx_in_father
+);
 
 static inline void oc_bpt_nd_release(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p)
-{
-    s_p->cfg_p->node_release(wu_p, node_p);    
+    Oc_bpt_node *node_p
+) {
+    s_p->cfg_p->node_release(wu_p, node_p);
 }
 
 /* utility function, safe for use only for co-routine usage.
  * use with care. These functions use a static internal buffer, they
  * are not re-entrent.
  */
-const char* oc_bpt_nd_string_of_key(struct Oc_bpt_state *s_p,
-                                    struct Oc_bpt_key *key);
-const char* oc_bpt_nd_string_of_2key(struct Oc_bpt_state *s_p,
-                                     struct Oc_bpt_key *key1_p,
-                                     struct Oc_bpt_key *key2_p);
-const char* oc_bpt_nd_string_of_node(struct Oc_bpt_state *s_p,
-                                     Oc_bpt_node *node_p);
+const char *
+oc_bpt_nd_string_of_key(struct Oc_bpt_state *s_p, struct Oc_bpt_key *key);
+const char *oc_bpt_nd_string_of_2key(
+    struct Oc_bpt_state *s_p,
+    struct Oc_bpt_key *key1_p,
+    struct Oc_bpt_key *key2_p
+);
+const char *
+oc_bpt_nd_string_of_node(struct Oc_bpt_state *s_p, Oc_bpt_node *node_p);
 /**********************************************************************/
 void oc_bpt_nd_create_root(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_pi);
+    Oc_bpt_node *node_pi
+);
 
 // Create a b-tree whose root is in address [addr]
-void oc_bpt_nd_init_map(
-    struct Oc_wu *wu_p,
-    Oc_bpt_cfg *cfg_p, 
-    uint64 addr);
+void oc_bpt_nd_init_map(struct Oc_wu *wu_p, Oc_bpt_cfg *cfg_p, uint64 addr);
 
 /* Delete a node. Deallocate the node and also
  * call data_release for data in leaves.
@@ -156,35 +158,24 @@ void oc_bpt_nd_init_map(
 void oc_bpt_nd_delete(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p);
+    Oc_bpt_node *node_p
+);
 
-// is this node full? 
-bool oc_bpt_nd_is_full(
-    struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p);
+// is this node full?
+bool oc_bpt_nd_is_full(struct Oc_bpt_state *s_p, Oc_bpt_node *node_p);
 
-// is this node a leaf? 
-bool oc_bpt_nd_is_leaf(
-    struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p);
+// is this node a leaf?
+bool oc_bpt_nd_is_leaf(struct Oc_bpt_state *s_p, Oc_bpt_node *node_p);
 
 // set a node status to be a leaf
-void oc_bpt_nd_set_leaf(
-    struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p);
+void oc_bpt_nd_set_leaf(struct Oc_bpt_state *s_p, Oc_bpt_node *node_p);
 
-bool oc_bpt_nd_is_root(
-    struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p);
+bool oc_bpt_nd_is_root(struct Oc_bpt_state *s_p, Oc_bpt_node *node_p);
 
-int oc_bpt_nd_max_ent_in_node (
-    struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p);
+int oc_bpt_nd_max_ent_in_node(struct Oc_bpt_state *s_p, Oc_bpt_node *node_p);
 
 // return the number of entries in [node_p]
-int oc_bpt_nd_num_entries(
-    struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p);
+int oc_bpt_nd_num_entries(struct Oc_bpt_state *s_p, Oc_bpt_node *node_p);
 
 // [node_p] is leaf node. Get its kth entry
 void oc_bpt_nd_leaf_get_kth(
@@ -192,28 +183,28 @@ void oc_bpt_nd_leaf_get_kth(
     Oc_bpt_node *node_p,
     int k,
     struct Oc_bpt_key **key_ppo,
-    struct Oc_bpt_data **data_ppo);
+    struct Oc_bpt_data **data_ppo
+);
 
 void oc_bpt_nd_index_get_kth(
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
     int k,
     struct Oc_bpt_key **key_ppo,
-    uint64 *addr_po);
+    uint64 *addr_po
+);
 
-// [node_p] is an index node. Set its kth pointer. 
+// [node_p] is an index node. Set its kth pointer.
 void oc_bpt_nd_index_set_kth(
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
     int k,
     struct Oc_bpt_key *key_p,
-    uint64 addr);
+    uint64 addr
+);
 
 // Remove the kth entry from [node_p]
-void oc_bpt_nd_remove_kth(
-    struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p,
-    int k);
+void oc_bpt_nd_remove_kth(struct Oc_bpt_state *s_p, Oc_bpt_node *node_p, int k);
 
 /* remove a range of keys
  * if this is a leaf node then also call the data_release function for the data.
@@ -223,7 +214,8 @@ void oc_bpt_nd_remove_range(
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
     int idx_start,
-    int idx_end);
+    int idx_end
+);
 
 /* return the location of the first key in [node_p] that is greater or equal to
  * [key_p]. If no such key exists return -1.
@@ -232,7 +224,8 @@ int oc_bpt_nd_lookup_ge_key(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
-    struct Oc_bpt_key *key_p);
+    struct Oc_bpt_key *key_p
+);
 
 /* return the location of the first key in [node_p] that is strictly greater than
  * [key_p]. If no such key exists return -1.
@@ -241,7 +234,8 @@ int oc_bpt_nd_lookup_gt_key(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
-    struct Oc_bpt_key *key_p);
+    struct Oc_bpt_key *key_p
+);
 
 /* return the location of the first key in [node_p] that is smaller or equal to
  * [key_p]. If no such key exists return -1.
@@ -250,22 +244,19 @@ int oc_bpt_nd_lookup_le_key(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
-    struct Oc_bpt_key *key_p);
+    struct Oc_bpt_key *key_p
+);
 
-struct Oc_bpt_key *oc_bpt_nd_get_kth_key(
-    struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p,
-    int k);
+struct Oc_bpt_key *
+oc_bpt_nd_get_kth_key(struct Oc_bpt_state *s_p, Oc_bpt_node *node_p, int k);
 
 // return the smallest key in [node_p]
-struct Oc_bpt_key* oc_bpt_nd_min_key(
-    struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p);
+struct Oc_bpt_key *
+oc_bpt_nd_min_key(struct Oc_bpt_state *s_p, Oc_bpt_node *node_p);
 
 // return the largest key in [node_p]
-struct Oc_bpt_key* oc_bpt_nd_max_key(
-    struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p);
+struct Oc_bpt_key *
+oc_bpt_nd_max_key(struct Oc_bpt_state *s_p, Oc_bpt_node *node_p);
 
 // insert a (key,data) pair into a leaf node
 bool oc_bpt_nd_leaf_insert_key(
@@ -273,14 +264,16 @@ bool oc_bpt_nd_leaf_insert_key(
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
     struct Oc_bpt_key *key_p,
-    struct Oc_bpt_data *data_p);
+    struct Oc_bpt_data *data_p
+);
 
 // return the data associated with a key in a leaf node
 struct Oc_bpt_data *oc_bpt_nd_leaf_lookup_key(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
-    struct Oc_bpt_key *key_p);
+    struct Oc_bpt_key *key_p
+);
 
 /* return the node-address associated with a key in an index node.
  * The lookup is -not exact-. For example, if an index node contains two
@@ -299,25 +292,29 @@ uint64 oc_bpt_nd_index_lookup_key(
     Oc_bpt_node *node_p,
     struct Oc_bpt_key *key_p,
     struct Oc_bpt_key **exact_key_ppo,
-    int *kth_po);
+    int *kth_po
+);
 
 // return the node-address for the minimal valued key
 uint64 oc_bpt_nd_index_lookup_min_key(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p);
+    Oc_bpt_node *node_p
+);
 
 // return the node-address for the maximal valued key
 uint64 oc_bpt_nd_index_lookup_max_key(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p);
+    Oc_bpt_node *node_p
+);
 
 bool oc_bpt_nd_remove_key(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
-    struct Oc_bpt_key *key_p);
+    struct Oc_bpt_key *key_p
+);
 
 /**********************************************************************/
 // used for split
@@ -330,16 +327,18 @@ void oc_bpt_nd_index_replace_w2(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *index_node_p,
-    int idx, 
+    int idx,
     Oc_bpt_node *left_node_p,
-    Oc_bpt_node *right_node_p);
+    Oc_bpt_node *right_node_p
+);
 
 // replace the minimum key with a different (smaller) key
 void oc_bpt_nd_index_replace_min_key(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *index_node_p,
-    struct Oc_bpt_key *key_p);
+    struct Oc_bpt_key *key_p
+);
 
 /* split a non-root node into two. The node can be a leaf or an index node.
  *
@@ -354,7 +353,8 @@ void oc_bpt_nd_index_replace_min_key(
 Oc_bpt_node *oc_bpt_nd_split(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p);
+    Oc_bpt_node *node_p
+);
 
 /* split a root node into two and create a new root with pointers to
  * the two childern. The root cannot move during this operation. 
@@ -362,7 +362,8 @@ Oc_bpt_node *oc_bpt_nd_split(
 void oc_bpt_nd_split_root(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    Oc_bpt_node *root_node_p );
+    Oc_bpt_node *root_node_p
+);
 /**********************************************************************/
 // used for remove-key
 
@@ -372,8 +373,9 @@ void oc_bpt_nd_split_root(
 void oc_bpt_nd_copy_into_root_and_dealloc(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    Oc_bpt_node *root_node_p,  
-    Oc_bpt_node *node_p);
+    Oc_bpt_node *root_node_p,
+    Oc_bpt_node *node_p
+);
 
 /* move entries from [node_p] into node [under_p] which has
  * an underflow. 
@@ -381,8 +383,9 @@ void oc_bpt_nd_copy_into_root_and_dealloc(
 void oc_bpt_nd_rebalance(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    Oc_bpt_node *under_p,  
-    Oc_bpt_node *node_p);
+    Oc_bpt_node *under_p,
+    Oc_bpt_node *node_p
+);
 
 /* copy all entries of [src_p] into [trg_p] 
  * pre-requisites:
@@ -393,8 +396,9 @@ void oc_bpt_nd_rebalance(
 void oc_bpt_nd_move_and_dealloc(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    Oc_bpt_node *trg_p,  
-    Oc_bpt_node *src_p);
+    Oc_bpt_node *trg_p,
+    Oc_bpt_node *src_p
+);
 
 /* used only in remove-range. Same as [oc_bpt_nd_rebalance] except
  * that it favours [under_p]. After shuffling keys [under_p] will have
@@ -403,8 +407,9 @@ void oc_bpt_nd_move_and_dealloc(
 void oc_bpt_nd_rebalance_skewed(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    Oc_bpt_node *under_p,  
-    Oc_bpt_node *node_p);
+    Oc_bpt_node *under_p,
+    Oc_bpt_node *node_p
+);
 
 /**********************************************************************/
 // used for insert-range
@@ -425,11 +430,12 @@ void oc_bpt_nd_rebalance_skewed(
 int oc_bpt_nd_insert_array_into_leaf(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p,    
+    Oc_bpt_node *node_p,
     int length,
     struct Oc_bpt_key *key_array,
     struct Oc_bpt_data *data_array,
-    int *nkeys_inserted_po);
+    int *nkeys_inserted_po
+);
 
 /**********************************************************************/
 // used by remove-range
@@ -444,7 +450,8 @@ void oc_bpt_nd_move_max_key(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *trg_p,
-    Oc_bpt_node *src_p);
+    Oc_bpt_node *src_p
+);
 
 /* move the smallest entry from [src_p] to [trg_p].
  *
@@ -456,7 +463,8 @@ void oc_bpt_nd_move_min_key(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *trg_p,
-    Oc_bpt_node *src_p);
+    Oc_bpt_node *src_p
+);
 
 /**********************************************************************/
 
@@ -464,9 +472,11 @@ void oc_bpt_nd_move_min_key(
  * Used in order to work correctly with the strict accounting for
  * pages performed by the PM. 
  */
-void oc_bpt_nd_swap_root_ref(Oc_bpt_state *s_p,
-                             struct Oc_wu *trg_wu_p,
-                             struct Oc_wu *src_wu_p);
+void oc_bpt_nd_swap_root_ref(
+    Oc_bpt_state *s_p,
+    struct Oc_wu *trg_wu_p,
+    struct Oc_wu *src_wu_p
+);
 /**********************************************************************/
 
 /* This function is used only by the clone operation.
@@ -474,9 +484,11 @@ void oc_bpt_nd_swap_root_ref(Oc_bpt_state *s_p,
  * Copy the root node of [src_p] onto a new location, increment the
  * ref-count on the immediate children. 
  */
-void oc_bpt_nd_clone_root(struct Oc_wu *wu_p,
-                          struct Oc_bpt_state *src_p,
-                          struct Oc_bpt_state *trg_p);
+void oc_bpt_nd_clone_root(
+    struct Oc_wu *wu_p,
+    struct Oc_bpt_state *src_p,
+    struct Oc_bpt_state *trg_p
+);
 
 /**********************************************************************/
 

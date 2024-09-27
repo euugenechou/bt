@@ -45,12 +45,13 @@
 
 // Implementation of tracing for the UTL module itself
 
-#define CASE(s) case s: return #s ; break
+    #define CASE(s)    \
+        case s:        \
+            return #s; \
+            break
 
-const char *oc_utl_string_of_trace_event(int ev_i)
-{
-    
-    switch(ev_i) {
+const char *oc_utl_string_of_trace_event(int ev_i) {
+    switch (ev_i) {
         CASE(OC_EV_UTL_PG_FREE);
         CASE(OC_EV_UTL_PG_ALLOC_STRICT);
         CASE(OC_EV_UTL_PG_ALLOC_B);
@@ -58,42 +59,49 @@ const char *oc_utl_string_of_trace_event(int ev_i)
         CASE(OC_EV_UTL_PG_INC);
         CASE(OC_EV_UTL_PG_DEC);
         CASE(OC_EV_UTL_PG_ALLOC_ARRAY_B);
-        
+
         CASE(OC_EV_UTL_PG_SIGNAL);
         CASE(OC_EV_UTL_PG_SIGNAL_OFF);
 
         CASE(OC_EV_UTL_ATTR_INIT);
         CASE(OC_EV_UTL_ATTR_GET);
         CASE(OC_EV_UTL_ATTR_SET);
-        
+
         CASE(OC_EV_UTL_VBUF_POOL_INIT);
 
         CASE(OC_EV_UTL_CA_RACE_COND);
 
-    default:
-        ERR(("bad state %d",ev_i ));        
+        default:
+            ERR(("bad state %d", ev_i));
     }
 }
 
-#undef CASE
+    #undef CASE
 
-void oc_utl_trace_wu_lvl(int level,
-                         Oc_utl_trace_event ev_i, 
-                         struct Oc_wu *wu_pi,
-                         const char *fmt_p,
-                         ...)
-{
+void oc_utl_trace_wu_lvl(
+    int level,
+    Oc_utl_trace_event ev_i,
+    struct Oc_wu *wu_pi,
+    const char *fmt_p,
+    ...
+) {
     va_list args;
 
-    if (pl_trace_base_is_set(PL_TRACE_BASE_OC_UTL, level))
-    {
-        // We are assuming here that 100 bytes are sufficient here. 
+    if (pl_trace_base_is_set(PL_TRACE_BASE_OC_UTL, level)) {
+        // We are assuming here that 100 bytes are sufficient here.
         char buf[100];
-        
+
         va_start(args, fmt_p);
         vsnprintf(buf, 100, fmt_p, args);
-        oc_utl_trace_base_wu_lvl(TRUE, PL_TRACE_BASE_OC_UTL, level,  wu_pi,
-                                 "%s %s", oc_utl_string_of_trace_event(ev_i), buf);
+        oc_utl_trace_base_wu_lvl(
+            TRUE,
+            PL_TRACE_BASE_OC_UTL,
+            level,
+            wu_pi,
+            "%s %s",
+            oc_utl_string_of_trace_event(ev_i),
+            buf
+        );
         va_end(args);
     }
 }
@@ -101,4 +109,3 @@ void oc_utl_trace_wu_lvl(int level,
 #endif
 
 /****************************************************************************/
-    

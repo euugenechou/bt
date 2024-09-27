@@ -48,16 +48,16 @@ typedef bool (*Oc_utl_htbl_compare)(void *elem, void *key);
  */
 typedef struct {
     Ss_slist_node **arr; /* A variable size array containing lists of items */
-    uint32 len ;           /* The length of the array */
-    uint32 size;           /* The number of elements in the hashtable. */
+    uint32 len; /* The length of the array */
+    uint32 size; /* The number of elements in the hashtable. */
 
     /* flag stating that we used malloc for arr*/
     bool arr_malloced_on_create;
-    
+
     /* Functions given by the user. 
      */
-    Oc_utl_htbl_hash      hash ;
-    Oc_utl_htbl_compare   compare ;
+    Oc_utl_htbl_hash hash;
+    Oc_utl_htbl_compare compare;
 } Oc_utl_htbl;
 
 #endif

@@ -38,16 +38,16 @@
  *  OC_LUN_SIZE is used only for emulator configurations where we do
  *  not get the LUN size from the Lodestone event system.
  */
-#define OC_LUN_SIZE             (1024 * 1024 * 1024)
+#define OC_LUN_SIZE (1024 * 1024 * 1024)
 
 /** The maximum number of LUNs
  */
 #define OC_MAX_LUN (16)
 
 // The number of pages in the page-pool
-#define OC_NUM_PAGES      (4096)
+#define OC_NUM_PAGES (4096)
 
-// Print out statistics? 
+// Print out statistics?
 #define OC_STATS (FALSE)
 
 /*****************************************************************************/
@@ -60,17 +60,17 @@
 // PM section
 
 // The number of pages managed by the PM
-#define OC_PM_NUM_PAGES                 (1000)
+#define OC_PM_NUM_PAGES (1000)
 
 /* The maximal number of pages referenced at the same time
  * Can not be set from a script.
  */
-#define OC_PM_MAX_REFS                  (20)
+#define OC_PM_MAX_REFS (20)
 
 /*****************************************************************************/
 
 // Naumber of concurrent tasks in the system
-#define OC_CRT_NUM_TASKS                 (64)
+#define OC_CRT_NUM_TASKS (64)
 
 /*****************************************************************************/
 // IO section
@@ -81,4 +81,4 @@
 
 /*****************************************************************************/
 
-#endif 
+#endif

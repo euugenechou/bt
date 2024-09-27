@@ -47,102 +47,102 @@ static void output_b(
     struct Oc_wu *wu_p,
     struct Oc_xt_state *s_p,
     Oc_xt_node *node_p,
-    char *tag_p, int level, 
-    FILE *out_p)
-{
+    char *tag_p,
+    int level,
+    FILE *out_p
+) {
     int i, num_entries;
     struct Oc_xt_key *min_key_p;
     char min_key_buf[20], buf[20];
-    
+
     min_key_p = oc_xt_nd_min_key(s_p, node_p);
     s_p->cfg_p->key_to_string(min_key_p, min_key_buf, 20);
-    
-    fprintf(out_p, "    %s_%d_%s [label=\"",
-            tag_p, level, min_key_buf);
-    
+
+    fprintf(out_p, "    %s_%d_%s [label=\"", tag_p, level, min_key_buf);
+
     // describe this node
     if (!oc_xt_nd_is_leaf(s_p, node_p)) {
         // An index node
         num_entries = oc_xt_nd_num_entries(s_p, node_p);
-        for (i=0; i< num_entries; i++)
-        {
+        for (i = 0; i < num_entries; i++) {
             struct Oc_xt_key *key_p;
-            
+
             key_p = oc_xt_nd_get_kth_key(s_p, node_p, i);
             s_p->cfg_p->key_to_string(key_p, buf, 20);
             fprintf(out_p, "<f%d> %s", i, buf);
-            if (i != num_entries-1) fprintf (out_p, "| ");
+            if (i != num_entries - 1)
+                fprintf(out_p, "| ");
         }
         fprintf(out_p, "\"];\n");
-    }
-    else {
+    } else {
         // A leaf node, we need to describe the extents
         num_entries = oc_xt_nd_num_entries(s_p, node_p);
-        for (i=0; i< num_entries; i++)
-        {
+        for (i = 0; i < num_entries; i++) {
             struct Oc_xt_key *key_p;
             struct Oc_xt_rcrd *rcrd_p;
-            
+
             oc_xt_nd_leaf_get_kth(s_p, node_p, i, &key_p, &rcrd_p);
             s_p->cfg_p->rcrd_to_string(key_p, rcrd_p, buf, 20);
             fprintf(out_p, "<f%d> %s", i, buf);
-            if (i != num_entries-1) fprintf (out_p, "| ");
+            if (i != num_entries - 1)
+                fprintf(out_p, "| ");
         }
         fprintf(out_p, "\"];\n");
     }
-    
+
     // if it is an index node then recurse down
     if (!oc_xt_nd_is_leaf(s_p, node_p)) {
-        for (i=0; i<num_entries; i++) {
+        for (i = 0; i < num_entries; i++) {
             Oc_xt_node *child_p;
             struct Oc_xt_key *dummy_key_p;
             uint64 addr;
-            
-            oc_xt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &addr); 
+
+            oc_xt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &addr);
             child_p = s_p->cfg_p->node_get(wu_p, addr);
-            
-            output_b(wu_p, s_p,
-                     child_p,
-                     tag_p, level+1,
-                     out_p);
+
+            output_b(wu_p, s_p, child_p, tag_p, level + 1, out_p);
             s_p->cfg_p->node_release(wu_p, child_p);
         }
     }
-    
+
     // If it is an index node add pointers to the childern
     if (!oc_xt_nd_is_leaf(s_p, node_p)) {
-        for (i=0; i<num_entries; i++)
-        {
+        for (i = 0; i < num_entries; i++) {
             Oc_xt_node *child_p;
             struct Oc_xt_key *dummy_key_p, *key_p;
             uint64 addr;
-            
-            oc_xt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &addr); 
+
+            oc_xt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &addr);
             child_p = s_p->cfg_p->node_get(wu_p, addr);
-            
+
             key_p = oc_xt_nd_min_key(s_p, child_p);
             s_p->cfg_p->key_to_string(key_p, buf, 20);
-            fprintf(out_p, "    %s_%d_%s -> %s_%d_%s;\n",
-                    tag_p, level, min_key_buf,
-                    tag_p, level+1, buf );
-            s_p->cfg_p->node_release(wu_p, child_p);            
+            fprintf(
+                out_p,
+                "    %s_%d_%s -> %s_%d_%s;\n",
+                tag_p,
+                level,
+                min_key_buf,
+                tag_p,
+                level + 1,
+                buf
+            );
+            s_p->cfg_p->node_release(wu_p, child_p);
         }
     }
 }
-
 
 void oc_xt_op_output_dot_b(
     struct Oc_wu *wu_p,
     struct Oc_xt_state *s_p,
     struct Oc_utl_file *_out_p,
-    char *tag_p)
-{
-    FILE *out_p = (FILE*) _out_p;
-        
+    char *tag_p
+) {
+    FILE *out_p = (FILE *)_out_p;
+
     if (oc_xt_nd_num_entries(s_p, s_p->root_node_p) == 0) {
         fprintf(out_p, "    // tree is empty\n");
-    }
-    else {
+    } else {
         output_b(wu_p, s_p, s_p->root_node_p, tag_p, 0, out_p);
     }
 }

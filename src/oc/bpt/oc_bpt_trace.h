@@ -45,14 +45,14 @@ typedef enum Oc_bpt_trace_event {
     OC_EV_BPT_REMOVE_RANGE,
     OC_EV_BPT_VALIDATE,
     OC_EV_BPT_VALIDATE_CLONES,
-    
+
     OC_EV_BPT_ATTR_INIT,
     OC_EV_BPT_ATTR_SET,
-    OC_EV_BPT_ATTR_GET,    
+    OC_EV_BPT_ATTR_GET,
     OC_EV_BPT_QUERY,
     OC_EV_BPT_INIT_CFG,
     OC_EV_BPT_DESTROY_STATE,
-    
+
     OC_EV_BPT_LEAF_SPLIT,
     OC_EV_BPT_ROOT_SPLIT,
     OC_EV_BPT_INDEX_SPLIT,
@@ -78,22 +78,25 @@ typedef enum Oc_bpt_trace_event {
     OC_EV_BPT_COW_ROOT_AND_UPDATE,
     OC_EV_BPT_CLONE,
     OC_EV_BPT_INIT_STATE,
-    OC_EV_BPT_ITER, 
+    OC_EV_BPT_ITER,
 } Oc_bpt_trace_event;
 
 #if LODESTONE_DEBUG
-void oc_bpt_trace_wu_lvl(int level,
-                         Oc_bpt_trace_event ev,
-                         struct Oc_wu *wu_pi,
-                         const char *fmt_p,
-                         ...);
+void oc_bpt_trace_wu_lvl(
+    int level,
+    Oc_bpt_trace_event ev,
+    struct Oc_wu *wu_pi,
+    const char *fmt_p,
+    ...
+);
 #else
-static inline void oc_bpt_trace_wu_lvl(int level,
-                                       Oc_bpt_trace_event ev,
-                                       struct Oc_wu *wu_pi,
-                                       const char *fmt_p,
-                                       ...)
-{}
+static inline void oc_bpt_trace_wu_lvl(
+    int level,
+    Oc_bpt_trace_event ev,
+    struct Oc_wu *wu_pi,
+    const char *fmt_p,
+    ...
+) {}
 #endif
 
 #endif

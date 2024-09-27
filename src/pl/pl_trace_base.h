@@ -60,19 +60,19 @@
  * representation and a compact integer representation.
  */
 typedef enum {
-    PL_TRACE_BASE_ALL,    // Trace all of OSD
+    PL_TRACE_BASE_ALL,  // Trace all of OSD
     PL_TRACE_BASE_PL,
     PL_TRACE_BASE_HNS,
 
     // OC tags
-    PL_TRACE_BASE_OC_CRT,     // Co-routines
-    PL_TRACE_BASE_OC_UTL,     // Utilities
-    PL_TRACE_BASE_OC_IO,      // The IO client
-    PL_TRACE_BASE_OC_BPT,     // The b+-tree
-    PL_TRACE_BASE_OC_PM,      // Page-Manager
-    PL_TRACE_BASE_OC_ALL,     // Trace all OC
+    PL_TRACE_BASE_OC_CRT,  // Co-routines
+    PL_TRACE_BASE_OC_UTL,  // Utilities
+    PL_TRACE_BASE_OC_IO,  // The IO client
+    PL_TRACE_BASE_OC_BPT,  // The b+-tree
+    PL_TRACE_BASE_OC_PM,  // Page-Manager
+    PL_TRACE_BASE_OC_ALL,  // Trace all OC
 
-    PL_TRACE_BASE_LAST_TAG // used for internal purposes, do -not- use externally
+    PL_TRACE_BASE_LAST_TAG  // used for internal purposes, do -not- use externally
 } Pl_trace_base_tag;
 
 // Initialize tracing
@@ -100,10 +100,7 @@ void pl_trace_base_init_done(void);
 int pl_trace_base_is_set(Pl_trace_base_tag tag, int level);
 
 // Actual tracing functions
-void pl_trace_base(Pl_trace_base_tag id,
-                   int level,
-                   const char *format_p,
-               ...);
+void pl_trace_base(Pl_trace_base_tag id, int level, const char *format_p, ...);
 
 /* Add a tag, or a tag:level pair to the traces.
  *
@@ -118,6 +115,5 @@ void pl_trace_base_add_string_tag_full(char *str_p);
  * Used to describe to the user what tags are supported.
   */
 void pl_trace_base_print_tag_list(void);
-
 
 #endif

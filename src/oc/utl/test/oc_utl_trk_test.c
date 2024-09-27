@@ -45,8 +45,7 @@
 #include "oc_utl_trk.h"
 
 /********************************************************************/
-static void run_tests(void* dummy)
-{
+static void run_tests(void *dummy) {
     Oc_crt_rw_lock lock1, lock2, lock3;
     Oc_wu wu;
     Oc_rm_ticket rm_ticket;
@@ -62,35 +61,33 @@ static void run_tests(void* dummy)
     oc_utl_trk_crt_lock_read(&wu, &lock1);
     oc_utl_trk_crt_lock_read(&wu, &lock2);
     oc_utl_trk_crt_lock_write(&wu, &lock3);
-    
+
     oc_utl_trk_crt_unlock(&wu, &lock1);
     oc_utl_trk_crt_lock_write(&wu, &lock1);
     oc_utl_trk_crt_unlock(&wu, &lock2);
     oc_utl_trk_abort(&wu);
 
-    printf("\nSuccess\n"); 
+    printf("\nSuccess\n");
     exit(0);
 }
 
-static void exec_test(void)
-{
+static void exec_test(void) {
     // Open a task to run all the tests
     oc_crt_create_task("run-tests", run_tests, NULL);
 }
 
-int main (int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     sem_t sema;
     Oc_crt_config crt_conf;
-    
+
     pl_init();
     oc_utl_init();
 
     oc_crt_default_config(&crt_conf);
     crt_conf.init_fun = exec_test;
     oc_crt_init_full(&crt_conf);
-        
-    sem_init(&sema,0,0);
+
+    sem_init(&sema, 0, 0);
     sem_wait(&sema);
 
     return 0;

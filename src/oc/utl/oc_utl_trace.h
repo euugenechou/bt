@@ -48,34 +48,38 @@ typedef enum Oc_utl_trace_event {
     OC_EV_UTL_PG_ALLOC_ARRAY_B,
     OC_EV_UTL_PG_INC,
     OC_EV_UTL_PG_DEC,
-    
+
     OC_EV_UTL_PG_SIGNAL,
     OC_EV_UTL_PG_SIGNAL_OFF,
 
-    OC_EV_UTL_ATTR_INIT, 
+    OC_EV_UTL_ATTR_INIT,
     OC_EV_UTL_ATTR_GET,
     OC_EV_UTL_ATTR_SET,
 
     OC_EV_UTL_VBUF_POOL_INIT,
     OC_EV_UTL_CA_RACE_COND,
-    
+
 } Oc_utl_trace_event;
-        
+
 #if OC_DEBUG
 
-void oc_utl_trace_wu_lvl(int level,
-                         Oc_utl_trace_event ev_i, 
-                         struct Oc_wu *wu_pi,
-                         const char *fmt_p,
-                         ...);
+void oc_utl_trace_wu_lvl(
+    int level,
+    Oc_utl_trace_event ev_i,
+    struct Oc_wu *wu_pi,
+    const char *fmt_p,
+    ...
+);
 
 #else
-static inline void oc_utl_trace_wu_lvl(int level,
-                                       Oc_utl_trace_event ev_i, 
-                                       struct Oc_wu *wu_pi,
-                                       const char *fmt_p,
-                                       ...) {}
+static inline void oc_utl_trace_wu_lvl(
+    int level,
+    Oc_utl_trace_event ev_i,
+    struct Oc_wu *wu_pi,
+    const char *fmt_p,
+    ...
+) {}
 
 #endif
 
-#endif  /* __OC_TRACE_H_ */
+#endif /* __OC_TRACE_H_ */

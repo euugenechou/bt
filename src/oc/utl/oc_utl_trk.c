@@ -44,26 +44,25 @@ static void add_ref(Oc_wu *wu_pi, Oc_crt_rw_lock *lock_p);
 static void rmv_ref(Oc_wu *wu_pi, Oc_crt_rw_lock *lock_p);
 /**********************************************************************/
 
-static void add_ref(Oc_wu *wu_pi, Oc_crt_rw_lock *lock_p)
-{
+static void add_ref(Oc_wu *wu_pi, Oc_crt_rw_lock *lock_p) {
     Oc_utl_trk_ref_set *refs_p = &wu_pi->rm_p->utl_rm.refs;
-    
+
     // oc_pm_trace_wu(OC_EV_PM_REFS_ADD, wu_pi, pcb_p->page_id.lba, 0);
     oc_utl_assert(refs_p->sum <= OC_UTL_TRK_MAX_REFS);
-        
+
     if (refs_p->sum == refs_p->cursor) {
         // add the lock in at the end
         refs_p->locks[refs_p->cursor] = lock_p;
         refs_p->cursor++;
         refs_p->sum++;
-        
+
         // oc_pm_trace_wu(OC_EV_PM_REFS_ADD2, wu_pi, refs_p->cursor, refs_p->sum);
     } else {
         // there is an empty slot in the beginning: add the lock there
         int i;
 
-        oc_utl_assert(refs_p->cursor-1 >= 0);
-        for (i=refs_p->cursor-1; i>=0; i--)
+        oc_utl_assert(refs_p->cursor - 1 >= 0);
+        for (i = refs_p->cursor - 1; i >= 0; i--)
             if (NULL == refs_p->locks[i]) {
                 refs_p->locks[i] = lock_p;
                 refs_p->sum++;
@@ -75,9 +74,7 @@ static void add_ref(Oc_wu *wu_pi, Oc_crt_rw_lock *lock_p)
     }
 }
 
-
-void rmv_ref(Oc_wu *wu_pi, Oc_crt_rw_lock *lock_p)
-{
+void rmv_ref(Oc_wu *wu_pi, Oc_crt_rw_lock *lock_p) {
     Oc_utl_trk_ref_set *refs_p = &wu_pi->rm_p->utl_rm.refs;
 
     // oc_pm_trace_wu(OC_EV_PM_REFS_RMV, wu_pi, pcb_p->page_id.lba, 0);
@@ -85,19 +82,18 @@ void rmv_ref(Oc_wu *wu_pi, Oc_crt_rw_lock *lock_p)
     oc_utl_debugassert(refs_p->cursor > 0);
 
     refs_p->sum--;
-    
-    if (refs_p->locks[refs_p->cursor-1] == lock_p) {
+
+    if (refs_p->locks[refs_p->cursor - 1] == lock_p) {
         /* optimization: the removed lock was the last one to be taken.
          * This is useful when the user has taken locks in LIFO (or stack)
          * pattern. The 
          */
-        refs_p->locks[refs_p->cursor-1] = NULL;
+        refs_p->locks[refs_p->cursor - 1] = NULL;
         refs_p->cursor--;
-        
-        while (refs_p->cursor >= 1 &&
-               NULL == refs_p->locks[refs_p->cursor-1])
+
+        while (refs_p->cursor >= 1 && NULL == refs_p->locks[refs_p->cursor - 1])
             refs_p->cursor--;
-        
+
         // oc_pm_trace_wu(OC_EV_PM_REFS_RMV2, wu_pi, refs_p->cursor, refs_p->sum);
     } else {
         int i;
@@ -106,7 +102,7 @@ void rmv_ref(Oc_wu *wu_pi, Oc_crt_rw_lock *lock_p)
          * Since we assume a stack usage pattern, start the search from the end. 
          */
         oc_utl_assert(refs_p->cursor >= 1);
-        for (i=refs_p->cursor-1; i>=0; i--) {
+        for (i = refs_p->cursor - 1; i >= 0; i--) {
             if (refs_p->locks[i] == lock_p) {
                 refs_p->locks[i] = NULL;
                 // oc_pm_trace_wu(OC_EV_PM_REFS_RMV2, wu_pi, refs_p->cursor, refs_p->sum);
@@ -119,30 +115,26 @@ void rmv_ref(Oc_wu *wu_pi, Oc_crt_rw_lock *lock_p)
 }
 
 /**********************************************************************/
-void oc_utl_trk_crt_lock_read(Oc_wu *wu_p, Oc_crt_rw_lock *lock_p)
-{
+void oc_utl_trk_crt_lock_read(Oc_wu *wu_p, Oc_crt_rw_lock *lock_p) {
     oc_utl_debugassert(wu_p->rm_p);
     oc_crt_lock_read(lock_p);
     add_ref(wu_p, lock_p);
 }
 
-void oc_utl_trk_crt_lock_write(Oc_wu *wu_p, Oc_crt_rw_lock *lock_p)
-{
+void oc_utl_trk_crt_lock_write(Oc_wu *wu_p, Oc_crt_rw_lock *lock_p) {
     oc_utl_debugassert(wu_p->rm_p);
     oc_crt_lock_write(lock_p);
     add_ref(wu_p, lock_p);
 }
 
-void oc_utl_trk_crt_unlock(Oc_wu *wu_p, Oc_crt_rw_lock *lock_p)
-{
+void oc_utl_trk_crt_unlock(Oc_wu *wu_p, Oc_crt_rw_lock *lock_p) {
     oc_utl_debugassert(wu_p->rm_p);
     oc_crt_unlock(lock_p);
     rmv_ref(wu_p, lock_p);
 }
 
 // release the set of locks held by this work-unit
-void oc_utl_trk_abort(Oc_wu *wu_p)
-{
+void oc_utl_trk_abort(Oc_wu *wu_p) {
     int i;
     Oc_utl_trk_ref_set *refs_p;
 
@@ -151,9 +143,9 @@ void oc_utl_trk_abort(Oc_wu *wu_p)
 
     if (0 == refs_p->cursor)
         return;
-    
-    for(i=0; i<refs_p->cursor; i++) {
-//        printf("MODE: %d", refs_p->locks[i]->mode);
+
+    for (i = 0; i < refs_p->cursor; i++) {
+        //        printf("MODE: %d", refs_p->locks[i]->mode);
         if (refs_p->locks[i] != NULL) {
             //oc_utl_assert (refs_p->locks[i]->mode != CRT_RWSTATE_NONE);
             oc_crt_unlock(refs_p->locks[i]);
@@ -162,8 +154,7 @@ void oc_utl_trk_abort(Oc_wu *wu_p)
     }
 }
 
-void oc_utl_trk_finalize(Oc_wu *wu_pi)
-{
+void oc_utl_trk_finalize(Oc_wu *wu_pi) {
     Oc_utl_trk_ref_set *refs_p = &wu_pi->rm_p->utl_rm.refs;
 
     oc_utl_assert(refs_p->sum == 0);
@@ -171,4 +162,3 @@ void oc_utl_trk_finalize(Oc_wu *wu_pi)
 }
 
 /**********************************************************************/
-

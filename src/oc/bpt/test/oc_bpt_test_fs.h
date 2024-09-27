@@ -37,24 +37,21 @@
  */
 /**********************************************************************/
 #ifndef OC_BPT_TEST_FS_H
-#define OC_BPT_TEST_FS_H
+    #define OC_BPT_TEST_FS_H
 
-#include "pl_base.h"
+    #include "pl_base.h"
 
 struct Oc_wu;
 struct Oc_rm_resource;
 
 // create an FS instance
-void oc_bpt_test_fs_create(
-    char *str_desc_p,
-    int num_blocks,
-    bool verbose);
+void oc_bpt_test_fs_create(char *str_desc_p, int num_blocks, bool verbose);
 
 /* Allocate a block. Return the initial offset of the allocated block.
  */
 uint64 oc_bpt_test_fs_alloc(void);
-    
-// deallocate a block 
+
+// deallocate a block
 void oc_bpt_test_fs_dealloc(uint64 addr);
 
 // increment the ref-count for the page in address [addr]
@@ -63,8 +60,8 @@ void oc_bpt_test_fs_inc_refcount(struct Oc_wu *wu_p, uint64 addr);
 // return the ref-count of the page at address [addr]
 int oc_bpt_test_fs_get_refcount(struct Oc_wu *wu_p, uint64 addr);
 
-void oc_bpt_test_fs_query_dealloc( struct Oc_rm_resource *r_p, int n_pages);
-void oc_bpt_test_fs_query_alloc( struct Oc_rm_resource *r_p, int n_pages);
+void oc_bpt_test_fs_query_dealloc(struct Oc_rm_resource *r_p, int n_pages);
+void oc_bpt_test_fs_query_alloc(struct Oc_rm_resource *r_p, int n_pages);
 
 // Verify the free-space has [num_blocks] allocated
 void oc_bpt_test_fs_verify(int num_blocks);
@@ -78,10 +75,10 @@ void oc_bpt_test_fs_alt_create(void);
 // Increase the ref-count for one of the blocks
 void oc_bpt_test_fs_alt_inc_refcount(struct Oc_wu *wu_p, uint64 addr);
 
-// compare the alternate block-map 
+// compare the alternate block-map
 bool oc_bpt_test_fs_alt_compare(int num_clones);
 
-// Release the alternate block map 
+// Release the alternate block map
 void oc_bpt_test_fs_alt_free(void);
 
 #endif

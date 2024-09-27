@@ -49,11 +49,10 @@ Oc_utl_config oc_utl_conf_g;
 
 /** Update a 32-bit Linear Redundancy Check */
 
-uint32 oc_utl_lrc_update(uint32 lrc, char * buf, int len)
-{
+uint32 oc_utl_lrc_update(uint32 lrc, char *buf, int len) {
     int n, non_align_len;
     uint32 zero_buf = 0;
-    uint32 * p;
+    uint32 *p;
 
     /* must be aligned on a 32-bit boundary */
     oc_utl_assert(((uint32)buf & 3) == 0);
@@ -61,13 +60,13 @@ uint32 oc_utl_lrc_update(uint32 lrc, char * buf, int len)
     /* must be multiple of 32 bits */
     //oc_utl_assert((len & 3) == 0);
 
-    p = (uint32 *) buf;
+    p = (uint32 *)buf;
     for (n = 0; n < len / 4; n++) {
         lrc ^= *p++;
     }
 
     // Handle non aligned end
-    non_align_len = len%4;
+    non_align_len = len % 4;
     if (non_align_len > 0) {
         memcpy(&zero_buf, p, non_align_len);
         lrc ^= zero_buf;
@@ -78,10 +77,12 @@ uint32 oc_utl_lrc_update(uint32 lrc, char * buf, int len)
 
 /**************************************************************/
 
-#define CASE(s) case s: return #s ; break
+#define CASE(s)    \
+    case s:        \
+        return #s; \
+        break
 
-const char *oc_utl_string_of_subcomponent_id(Oc_subcomponent_id id)
-{
+const char *oc_utl_string_of_subcomponent_id(Oc_subcomponent_id id) {
     switch (id) {
         CASE(OC_CRT);
         CASE(OC_IO);
@@ -100,8 +101,8 @@ const char *oc_utl_string_of_subcomponent_id(Oc_subcomponent_id id)
         CASE(OC_JL);
         CASE(OC_RC);
 
-    default:
-        ERR(("bad case"));
+        default:
+            ERR(("bad case"));
     }
 }
 
@@ -109,24 +110,23 @@ const char *oc_utl_string_of_subcomponent_id(Oc_subcomponent_id id)
 
 /**************************************************************/
 
-
-void oc_utl_init_full(Oc_utl_config *conf_pi)
-{
-    memcpy(&oc_utl_conf_g,  conf_pi, sizeof(Oc_utl_config));
+void oc_utl_init_full(Oc_utl_config *conf_pi) {
+    memcpy(&oc_utl_conf_g, conf_pi, sizeof(Oc_utl_config));
 
     printf("====================\n");
     printf("UTL configuration:\n");
-    printf("   lun size: %Lu(Mbyte), or, %Lu(Kbyte)\n",
-           oc_utl_conf_g.lun_size /(1024 * 1024),
-           oc_utl_conf_g.lun_size / 1024);
+    printf(
+        "   lun size: %Lu(Mbyte), or, %Lu(Kbyte)\n",
+        oc_utl_conf_g.lun_size / (1024 * 1024),
+        oc_utl_conf_g.lun_size / 1024
+    );
     printf("   OSD version: %lu\n", (uint32)oc_utl_conf_g.version);
     printf("   data dev: %s\n", oc_utl_conf_g.data_dev);
     printf("   ljl dev: %s\n", oc_utl_conf_g.ljl_dev);
     printf("====================\n");
 }
 
-void oc_utl_default_config(Oc_utl_config *conf_po)
-{
+void oc_utl_default_config(Oc_utl_config *conf_po) {
     memset(conf_po, 0, sizeof(Oc_utl_config));
     conf_po->lun_size = OC_LUN_SIZE;
 
@@ -134,23 +134,20 @@ void oc_utl_default_config(Oc_utl_config *conf_po)
     memset(conf_po->ljl_dev, 0, 60);
 }
 
-void oc_utl_init(void)
-{
+void oc_utl_init(void) {
     Oc_utl_config conf;
 
     oc_utl_default_config(&conf);
     oc_utl_init_full(&conf);
 }
 
-void oc_utl_free_resources()
-{
+void oc_utl_free_resources() {
     //oc_utl_page_free_resources();
 }
 
 /**************************************************************/
 
-uint64 oc_query_input_lun_size( uint32 lun )
-{
+uint64 oc_query_input_lun_size(uint32 lun) {
     return oc_utl_conf_g.lun_size;
 }
 
@@ -165,15 +162,16 @@ uint64 oc_query_input_lun_size( uint32 lun )
 
 /**************************************************************/
 
-uint32 oc_utl_log2(uint32 num)
-{
+uint32 oc_utl_log2(uint32 num) {
     int i;
 
-    if (0 == num || 1 == num) return 0;
+    if (0 == num || 1 == num)
+        return 0;
 
-    for (i=1; i<32; i++) {
-        num = num>>1;
-        if (0 == num) return (i-1);
+    for (i = 1; i < 32; i++) {
+        num = num >> 1;
+        if (0 == num)
+            return (i - 1);
     }
 
     return 32;

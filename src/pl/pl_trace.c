@@ -49,39 +49,43 @@ end_copyright_notice_OCO_2005
 /****************************************************************************/
 #if OC_DEBUG
 
-#define CASE(s) case s: return #s ; break
+    #define CASE(s)    \
+        case s:        \
+            return #s; \
+            break
 
-static char *string_of_ev(Pl_trace_event ev)
-{
-    switch(ev) {
+static char *string_of_ev(Pl_trace_event ev) {
+    switch (ev) {
         CASE(PL_EV_CREATE_PTHREAD);
 
         CASE(PL_EV_SEMA_PIPE_POST);
         CASE(PL_EV_SEMA_PIPE_WAIT);
-        
+
         CASE(PL_EV_IO);
         CASE(PL_EV_IO_SECOND);
-    default:
-        ERR(("bad event (%d)", ev));
+        default:
+            ERR(("bad event (%d)", ev));
     }
 }
 
-#undef CASE
+    #undef CASE
 
-void pl_trace( int level,
-               Pl_trace_event ev,
-               const char *fmt_p,
-               ...)
-{
+void pl_trace(int level, Pl_trace_event ev, const char *fmt_p, ...) {
     if (pl_trace_base_is_set(PL_TRACE_BASE_PL, level)) {
         va_list args;
-        char buf [100];
-        
+        char buf[100];
+
         va_start(args, fmt_p);
         vsprintf(buf, fmt_p, args);
         va_end(args);
-        
-        pl_trace_base(PL_TRACE_BASE_PL, level, "TRACE (%s, %s)\n", string_of_ev(ev), buf);
+
+        pl_trace_base(
+            PL_TRACE_BASE_PL,
+            level,
+            "TRACE (%s, %s)\n",
+            string_of_ev(ev),
+            buf
+        );
     }
 }
 #endif

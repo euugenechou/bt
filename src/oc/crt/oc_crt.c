@@ -47,19 +47,17 @@ static Oc_crt_config config;
 
 // pthread-based implementation
 
-void oc_crt_init_rw_lock(Oc_crt_rw_lock * lock)
-{
+void oc_crt_init_rw_lock(Oc_crt_rw_lock *lock) {
     int ern;
 
     ern = pthread_rwlock_init(&lock->lock, NULL);
     if (ern) {
-        printf("pthread_rwlock_init: (%d) %s", ern, strerror(ern)) ;
+        printf("pthread_rwlock_init: (%d) %s", ern, strerror(ern));
         exit(1);
     }
 }
 
-void oc_crt_lock_read(Oc_crt_rw_lock * lock)
-{
+void oc_crt_lock_read(Oc_crt_rw_lock *lock) {
     int ern;
 
     ern = pthread_rwlock_rdlock(&lock->lock);
@@ -69,46 +67,39 @@ void oc_crt_lock_read(Oc_crt_rw_lock * lock)
     }
 }
 
-void oc_crt_lock_write(Oc_crt_rw_lock * lock)
-{
+void oc_crt_lock_write(Oc_crt_rw_lock *lock) {
     int ern;
 
     ern = pthread_rwlock_wrlock(&lock->lock);
     if (ern) {
-        printf("pthread_rwlock_wrlock: (%d) %s", ern, strerror(ern)) ;
+        printf("pthread_rwlock_wrlock: (%d) %s", ern, strerror(ern));
         exit(1);
     }
 }
 
-void oc_crt_unlock(Oc_crt_rw_lock * lock)
-{
+void oc_crt_unlock(Oc_crt_rw_lock *lock) {
     int ern;
 
     ern = pthread_rwlock_unlock(&lock->lock);
     if (ern) {
-        printf("pthread_rwlock_unlock: (%d) %s", ern, strerror(ern)) ;
+        printf("pthread_rwlock_unlock: (%d) %s", ern, strerror(ern));
         exit(1);
     }
 }
 
-bool oc_crt_rw_is_locked_write(Oc_crt_rw_lock * lock)
-{
+bool oc_crt_rw_is_locked_write(Oc_crt_rw_lock *lock) {
     return TRUE;
 }
 
-bool oc_crt_rw_is_locked_read(Oc_crt_rw_lock * lock_p)
-{
+bool oc_crt_rw_is_locked_read(Oc_crt_rw_lock *lock_p) {
     return TRUE;
 }
 
-bool oc_crt_lock_check(Oc_crt_rw_lock * lock_p)
-{
+bool oc_crt_lock_check(Oc_crt_rw_lock *lock_p) {
     return TRUE;
 }
 
-
-void oc_crt_init_full(Oc_crt_config * config_p)
-{
+void oc_crt_init_full(Oc_crt_config *config_p) {
     pthread_t id;
 
     config = *config_p;
@@ -128,65 +119,56 @@ void oc_crt_init_full(Oc_crt_config * config_p)
     pthread_attr_destroy(&attr);
 }
 
-void oc_crt_default_config(Oc_crt_config *config_p)
-{
+void oc_crt_default_config(Oc_crt_config *config_p) {
     memset(config_p, 0, sizeof(Oc_crt_config));
 }
 
-void oc_crt_init(void)
-{
+void oc_crt_init(void) {
     oc_crt_init_full(&config);
 }
 
-void oc_crt_yield_task(void)
-{
-    sched_yield ();
+void oc_crt_yield_task(void) {
+    sched_yield();
 }
 
-void oc_crt_assert(void)
-{
+void oc_crt_assert(void) {}
+
+int oc_crt_get_thread(void) {
+    return (int)pthread_self();
 }
 
-int oc_crt_get_thread(void)
-{
-    return (int)pthread_self ();
-}
-
-
-void oc_crt_sema_init(Oc_crt_sema * sema_p, int value)
-{
+void oc_crt_sema_init(Oc_crt_sema *sema_p, int value) {
     int ern;
 
     ern = sem_init(&sema_p->sem, 0, value);
     if (ern) {
-        ERR(("sem_init: (%d) %s", ern, strerror(ern))) ;
+        ERR(("sem_init: (%d) %s", ern, strerror(ern)));
     }
 }
 
-void oc_crt_sema_post(Oc_crt_sema * sema_p)
-{
+void oc_crt_sema_post(Oc_crt_sema *sema_p) {
     int ern;
 
-    ern = sem_post (&sema_p->sem);
+    ern = sem_post(&sema_p->sem);
     if (ern) {
-        ERR(("sem_post: (%d) %s", ern, strerror(ern))) ;
+        ERR(("sem_post: (%d) %s", ern, strerror(ern)));
     }
 }
 
-void oc_crt_sema_wait(Oc_crt_sema * sema_p)
-{
+void oc_crt_sema_wait(Oc_crt_sema *sema_p) {
     int ern;
 
     ern = sem_wait(&sema_p->sem);
     if (ern) {
-        ERR(("sem_wait: (%d) %s", ern, strerror(ern))) ;
+        ERR(("sem_wait: (%d) %s", ern, strerror(ern)));
     }
 }
 
-int oc_crt_create_task(const char * name_p,
-                        void *(*start_routine) (void *),
-                        void * arg_p)
-{
+int oc_crt_create_task(
+    const char *name_p,
+    void *(*start_routine)(void *),
+    void *arg_p
+) {
     int id;
     pthread_attr_t attr;
 

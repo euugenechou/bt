@@ -43,10 +43,10 @@ typedef struct Oc_crt_config {
     uint32 max_cycle_count;
     uint32 stack_page_size;  // how many 4K pages to use for a stack?
     uint32 stack_guard_size;
-    uint32 stack_size;       // computed internally
+    uint32 stack_size;  // computed internally
     bool deterministic_run;
 
-    void *(*init_fun) (void*);  // function to execute after start-up
+    void *(*init_fun)(void *);  // function to execute after start-up
 } Oc_crt_config;
 
 typedef enum Oc_crt_rw_mode {

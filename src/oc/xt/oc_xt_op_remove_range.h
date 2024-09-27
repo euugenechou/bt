@@ -42,6 +42,7 @@ int oc_xt_op_remove_range_b(
     struct Oc_wu *wu_p,
     Oc_xt_state *s_p,
     struct Oc_xt_key *min_key_p,
-    struct Oc_xt_key *max_key_p);
+    struct Oc_xt_key *max_key_p
+);
 
 #endif

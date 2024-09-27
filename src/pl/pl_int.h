@@ -51,15 +51,14 @@ uint32 pl_rand_uint32_r(uint32 *seed_p, uint32 num);
 
 //test that all bytes in a buffer equal byte_value.
 //return 0 if equal, -1 otherwise.
-int pl_memtest(void* buf_p, uint8 byte_value, int length);
+int pl_memtest(void *buf_p, uint8 byte_value, int length);
 
 void pl_init(void);
 
 void pl_utl_set_hns(void);
 
-char* pl_create_base_dir(void);
+char *pl_create_base_dir(void);
 
 char *pl_get_base_dir(void);
-
 
 #endif

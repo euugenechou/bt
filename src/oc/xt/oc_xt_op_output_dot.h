@@ -43,6 +43,7 @@ void oc_xt_op_output_dot_b(
     struct Oc_wu *wu_p,
     struct Oc_xt_state *s_p,
     struct Oc_utl_file *out_p,
-    char *tag_p); 
+    char *tag_p
+);
 
 #endif

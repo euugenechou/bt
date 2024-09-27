@@ -42,8 +42,8 @@
 #include "pl_dstru.h"
 #include "pl_mm_int.h"
 
-static uint32 oc_bpt_label_hash(void* _disk_addr, int num_buckets, int dummy);
-static bool oc_bpt_label_compare(void *_elem, void* _disk_addr);
+static uint32 oc_bpt_label_hash(void *_disk_addr, int num_buckets, int dummy);
+static bool oc_bpt_label_compare(void *_elem, void *_disk_addr);
 
 /**********************************************************************/
 /* build a hash-table with 10000 entries. This really needs to
@@ -61,52 +61,44 @@ typedef struct Oc_bpt_label_cell {
     int val;
 } Oc_bpt_label_cell;
 
+static uint32 oc_bpt_label_hash(void *_disk_addr, int num_buckets, int dummy) {
+    uint64 *disk_addr_p = (uint64 *)_disk_addr;
 
-static uint32 oc_bpt_label_hash(void* _disk_addr, int num_buckets, int dummy)
-{
-    uint64* disk_addr_p = (uint64*)_disk_addr;
-    
     return (*disk_addr_p / 35291) % num_buckets;
 }
 
-static bool oc_bpt_label_compare(void *_elem, void* _disk_addr)
-{
-    uint64 *disk_addr_p = (uint64*)_disk_addr;
+static bool oc_bpt_label_compare(void *_elem, void *_disk_addr) {
+    uint64 *disk_addr_p = (uint64 *)_disk_addr;
     Oc_bpt_label_cell *cell_p = (Oc_bpt_label_cell *)_elem;
 
     return cell_p->addr == *disk_addr_p;
 }
 
-static Oc_bpt_label_cell* oc_bpt_label_lookup(uint64 disk_addr)
-{
-    return (Oc_bpt_label_cell*)oc_utl_htbl_lookup(&htbl, &disk_addr);
+static Oc_bpt_label_cell *oc_bpt_label_lookup(uint64 disk_addr) {
+    return (Oc_bpt_label_cell *)oc_utl_htbl_lookup(&htbl, &disk_addr);
 }
 
-
-static void oc_bpt_label_insert(Oc_bpt_label_cell *cell_p)
-{
-    oc_utl_htbl_insert(&htbl,
-                       (void*)&cell_p->addr,
-                       (void*)cell_p);
+static void oc_bpt_label_insert(Oc_bpt_label_cell *cell_p) {
+    oc_utl_htbl_insert(&htbl, (void *)&cell_p->addr, (void *)cell_p);
 }
 
 /**********************************************************************/
 
-void oc_bpt_label_init(int max_n_nodes)
-{
-    oc_utl_htbl_create(&htbl,
-                       max_n_nodes,
-                       NULL,
-                       oc_bpt_label_hash,
-                       oc_bpt_label_compare);
+void oc_bpt_label_init(int max_n_nodes) {
+    oc_utl_htbl_create(
+        &htbl,
+        max_n_nodes,
+        NULL,
+        oc_bpt_label_hash,
+        oc_bpt_label_compare
+    );
 }
 
 // Get a pointer to the node label
-int* oc_bpt_label_get(struct Oc_wu *wu_p, Oc_bpt_node *node_p)
-{
+int *oc_bpt_label_get(struct Oc_wu *wu_p, Oc_bpt_node *node_p) {
     uint64 disk_addr = node_p->disk_addr;
     Oc_bpt_label_cell *cell_p;
-    
+
     /* Lookup the cell.
      *
      * If it exists, return a pointer to the value.
@@ -119,8 +111,8 @@ int* oc_bpt_label_get(struct Oc_wu *wu_p, Oc_bpt_node *node_p)
      * a cell and insert it into the table.
      */
 
-    // create a new cell 
-    cell_p = (Oc_bpt_label_cell*) pl_mm_malloc(sizeof(Oc_bpt_label_cell));
+    // create a new cell
+    cell_p = (Oc_bpt_label_cell *)pl_mm_malloc(sizeof(Oc_bpt_label_cell));
     memset(cell_p, 0, sizeof(Oc_bpt_label_cell));
     cell_p->addr = disk_addr;
 
@@ -131,25 +123,23 @@ int* oc_bpt_label_get(struct Oc_wu *wu_p, Oc_bpt_node *node_p)
 
 /**********************************************************************/
 
-static bool oc_bpt_label_true_fun(void *elem, void *data)
-{
+static bool oc_bpt_label_true_fun(void *elem, void *data) {
     return TRUE;
 }
 
 // Release the labels hash-table
-void oc_bpt_label_free(void)
-{
+void oc_bpt_label_free(void) {
     static Ss_slist cells;
 
-    // extract the cells from the hash-table 
+    // extract the cells from the hash-table
     ssslist_init(&cells);
     oc_utl_htbl_iter_mv_to_list(&htbl, oc_bpt_label_true_fun, NULL, &cells);
 
     // release all the cells
     while (!ssslist_empty(&cells)) {
         Oc_bpt_label_cell *cell_p;
-        
-        cell_p = (Oc_bpt_label_cell*) ssslist_remove_head(&cells);
+
+        cell_p = (Oc_bpt_label_cell *)ssslist_remove_head(&cells);
         pl_mm_free(cell_p);
     }
 

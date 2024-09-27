@@ -44,11 +44,8 @@
 #include "oc_xt_trace.h"
 #include "oc_xt_nd.h"
 /**********************************************************************/
-static void delete_b(
-    struct Oc_wu *wu_p,
-    struct Oc_xt_state *s_p,
-    Oc_xt_node *node_p)
-{
+static void
+delete_b(struct Oc_wu *wu_p, struct Oc_xt_state *s_p, Oc_xt_node *node_p) {
     if (!oc_xt_nd_is_leaf(s_p, node_p)) {
         // An index node, recurse through its children
         int i;
@@ -56,11 +53,9 @@ static void delete_b(
         Oc_xt_node *child_node_p;
         struct Oc_xt_key *dummy_key_p;
         uint64 child_addr;
-        
-        for (i=0; i< num_entries; i++) {
-            oc_xt_nd_index_get_kth(s_p, node_p, i,
-                                    &dummy_key_p,
-                                    &child_addr);
+
+        for (i = 0; i < num_entries; i++) {
+            oc_xt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &child_addr);
             child_node_p = s_p->cfg_p->node_get(wu_p, child_addr);
             delete_b(wu_p, s_p, child_node_p);
         }
@@ -69,11 +64,8 @@ static void delete_b(
     // remove this node
     oc_xt_nd_delete(wu_p, s_p, node_p);
 }
- 
-void oc_xt_op_delete_b(
-    struct Oc_wu *wu_p,
-    struct Oc_xt_state *s_p)
-{
+
+void oc_xt_op_delete_b(struct Oc_wu *wu_p, struct Oc_xt_state *s_p) {
     delete_b(wu_p, s_p, s_p->root_node_p);
     s_p->root_node_p = NULL;
 }

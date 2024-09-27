@@ -61,7 +61,7 @@
 void oc_bpt_label_init(int max_n_nodes);
 
 // Get a pointer to the node label
-int* oc_bpt_label_get(struct Oc_wu*, Oc_bpt_node*);
+int *oc_bpt_label_get(struct Oc_wu *, Oc_bpt_node *);
 
 // Release the labels hash-table
 void oc_bpt_label_free(void);

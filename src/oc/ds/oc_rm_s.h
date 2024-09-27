@@ -35,18 +35,18 @@
 #include "oc_utl_s.h"
 
 typedef struct Oc_rm_resource {
-    uint32 pm_pages;    // Maximum number of in-memory pages 
-    uint32 fs_pages;    // Maximum number of on-disk pages
+    uint32 pm_pages;  // Maximum number of in-memory pages
+    uint32 fs_pages;  // Maximum number of on-disk pages
     uint32 pm_write_pages_i;
     uint32 pm_read_pages_i;
 } Oc_rm_resource;
 
 typedef struct Oc_rm_ticket {
     Oc_rm_resource rm_resource_i;
-    uint32   fs_ticket_o;
+    uint32 fs_ticket_o;
 
     Oc_utl_rm utl_rm;
-  //Oc_pm_rm pm_rm;
+    //Oc_pm_rm pm_rm;
 } Oc_rm_ticket;
 
 #endif

@@ -77,25 +77,24 @@ struct Oc_bpt_test_state;
 // setup
 void oc_bpt_test_utl_init(void);
 bool oc_bpt_test_utl_parse_cmd_line(int argc, char *argv[]);
-void oc_bpt_test_utl_help_msg (void);
+void oc_bpt_test_utl_help_msg(void);
 
 void oc_bpt_test_utl_set_print_fun(void (*print_fun)(void));
 void oc_bpt_test_utl_set_validate_fun(bool (*validate_fun)(void));
 
 // create a b-tree state
-struct Oc_bpt_test_state* oc_bpt_test_utl_btree_init(
-    struct Oc_wu *wu_p,
-    uint64 tid);    
+struct Oc_bpt_test_state *
+oc_bpt_test_utl_btree_init(struct Oc_wu *wu_p, uint64 tid);
 
 // release the b-tree state
-void oc_bpt_test_utl_btree_destroy(
-    struct Oc_bpt_test_state *s_p);
-    
+void oc_bpt_test_utl_btree_destroy(struct Oc_bpt_test_state *s_p);
+
 // create a b-tree.
-// The [name_p] argument is used to identify this clone 
+// The [name_p] argument is used to identify this clone
 void oc_bpt_test_utl_btree_create(
     struct Oc_wu *wu_p,
-    struct Oc_bpt_test_state* s_p);
+    struct Oc_bpt_test_state *s_p
+);
 
 /* insert [key] into the tree.
  * if [*check_eq_pio] is true then verify against the linked-list.
@@ -104,80 +103,91 @@ void oc_bpt_test_utl_btree_create(
  */
 void oc_bpt_test_utl_btree_insert(
     struct Oc_wu *wu_p,
-    struct Oc_bpt_test_state* s_p,
+    struct Oc_bpt_test_state *s_p,
     uint32 key,
-    bool *check_eq_pio);    
+    bool *check_eq_pio
+);
 
 void oc_bpt_test_utl_btree_lookup(
     struct Oc_wu *wu_p,
-    struct Oc_bpt_test_state* s_p,
+    struct Oc_bpt_test_state *s_p,
     uint32 key,
-    bool *check_eq_pio);    
+    bool *check_eq_pio
+);
 
 void oc_bpt_test_utl_btree_remove_key(
     struct Oc_wu *wu_p,
-    struct Oc_bpt_test_state* s_p,
+    struct Oc_bpt_test_state *s_p,
     uint32 key,
-    bool *check_eq_pio);    
+    bool *check_eq_pio
+);
 
 void oc_bpt_test_utl_btree_delete(
     struct Oc_wu *wu_p,
-    struct Oc_bpt_test_state* s_p);
+    struct Oc_bpt_test_state *s_p
+);
 
-bool oc_bpt_test_utl_btree_compare_and_verify(
-    struct Oc_bpt_test_state* s_p);
+bool oc_bpt_test_utl_btree_compare_and_verify(struct Oc_bpt_test_state *s_p);
 
 // debugging
 typedef enum Oc_bpt_test_utl_disp_choice {
     OC_BPT_TEST_UTL_TREE_ONLY,
     OC_BPT_TEST_UTL_LL_ONLY,
-    OC_BPT_TEST_UTL_BOTH,    
+    OC_BPT_TEST_UTL_BOTH,
 } Oc_bpt_test_utl_disp_choice;
 
 void oc_bpt_test_utl_btree_display(
-    struct Oc_bpt_test_state* s_p,
-    Oc_bpt_test_utl_disp_choice choice);
+    struct Oc_bpt_test_state *s_p,
+    Oc_bpt_test_utl_disp_choice choice
+);
 
-bool oc_bpt_test_utl_btree_validate(
-    struct Oc_bpt_test_state* s_p);
+bool oc_bpt_test_utl_btree_validate(struct Oc_bpt_test_state *s_p);
 
 // validate an array of clones
 bool oc_bpt_test_utl_btree_validate_clones(
     int n_clones,
-    struct Oc_bpt_test_state* s_p[]);
+    struct Oc_bpt_test_state *s_p[]
+);
 
-void oc_bpt_test_utl_statistics(
-    struct Oc_bpt_test_state* s_p);
+void oc_bpt_test_utl_statistics(struct Oc_bpt_test_state *s_p);
 
 // range operations
 void oc_bpt_test_utl_btree_lookup_range(
     struct Oc_wu *wu_p,
-    struct Oc_bpt_test_state* s_p,
-    uint32 lo_key, uint32 hi_key,
-    bool *check_eq_pio);    
+    struct Oc_bpt_test_state *s_p,
+    uint32 lo_key,
+    uint32 hi_key,
+    bool *check_eq_pio
+);
 
 void oc_bpt_test_utl_btree_insert_range(
     struct Oc_wu *wu_p,
-    struct Oc_bpt_test_state* s_p,
-    uint32 lo_key, uint32 len,
-    bool *check_eq_pio);    
+    struct Oc_bpt_test_state *s_p,
+    uint32 lo_key,
+    uint32 len,
+    bool *check_eq_pio
+);
 
 void oc_bpt_test_utl_btree_remove_range(
     struct Oc_wu *wu_p,
-    struct Oc_bpt_test_state *s_p,    
-    uint32 lo_key, uint32 hi_key,
-    bool *check_eq_pio);    
-    
+    struct Oc_bpt_test_state *s_p,
+    uint32 lo_key,
+    uint32 hi_key,
+    bool *check_eq_pio
+);
+
 // clone a tree
 void oc_bpt_test_utl_btree_clone(
     struct Oc_wu *wu_p,
-    struct Oc_bpt_test_state* src_p,
-    struct Oc_bpt_test_state* trg_p);
+    struct Oc_bpt_test_state *src_p,
+    struct Oc_bpt_test_state *trg_p
+);
 
 // Display the set of clones together in one tree
 void oc_bpt_test_utl_display_all(
     int n_clones,
-    struct Oc_bpt_test_state* clone_array[]);
+    struct Oc_bpt_test_state *clone_array[]
+);
 
 void oc_bpt_test_utl_finalize(int refcnt);
 

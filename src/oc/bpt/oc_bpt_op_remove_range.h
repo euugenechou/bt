@@ -42,6 +42,7 @@ int oc_bpt_op_remove_range_b(
     struct Oc_wu *wu_p,
     Oc_bpt_state *s_p,
     struct Oc_bpt_key *min_key_p,
-    struct Oc_bpt_key *max_key_p);
+    struct Oc_bpt_key *max_key_p
+);
 
 #endif

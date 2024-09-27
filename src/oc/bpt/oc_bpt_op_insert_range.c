@@ -66,30 +66,35 @@ static int chop(
     struct Oc_bpt_state *s_p,
     int length,
     struct Oc_bpt_key *key_array,
-    struct Oc_bpt_key *hi_key_p);
+    struct Oc_bpt_key *hi_key_p
+);
 static Oc_bpt_node *lookup_key_in_index_node(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
     struct Oc_bpt_key *key_p,
     int *idx_po,
-    struct Oc_bpt_key *hi_key_pio);
+    struct Oc_bpt_key *hi_key_pio
+);
 static void correct_min_key(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
-    struct Oc_bpt_key *key_p);
+    struct Oc_bpt_key *key_p
+);
 static void update_hi_key(
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
-    struct Oc_bpt_key *hi_key_p);
+    struct Oc_bpt_key *hi_key_p
+);
 static int fill_single_leaf_b(
     struct Oc_wu *wu_p,
     Oc_bpt_state *s_p,
     int length,
     struct Oc_bpt_key *key_array,
     struct Oc_bpt_data *data_array,
-    int *nkeys_inserted_po);    
+    int *nkeys_inserted_po
+);
 /**********************************************************************/
 
 /* divide an array of consecutive keys into those less than [hi_key_p]
@@ -102,24 +107,30 @@ static int chop(
     struct Oc_bpt_state *s_p,
     int length,
     struct Oc_bpt_key *key_array,
-    struct Oc_bpt_key *hi_key_p)
-{
+    struct Oc_bpt_key *hi_key_p
+) {
     int i;
 
     oc_utl_debugassert(length > 0);
-    
+
     // simple optimization. check if the high-key is larger than all the keys
     // in the array.
-    if (s_p->cfg_p->key_compare(oc_bpt_nd_key_array_kth(s_p, key_array, length-1),
-                                hi_key_p) == 1)
+    if (s_p->cfg_p->key_compare(
+            oc_bpt_nd_key_array_kth(s_p, key_array, length - 1),
+            hi_key_p
+        )
+        == 1)
         return length;
-    
-    for (i=0; i<length; i++)
-        if (s_p->cfg_p->key_compare(oc_bpt_nd_key_array_kth(s_p, key_array, i),
-                                    hi_key_p) < 1)
+
+    for (i = 0; i < length; i++)
+        if (s_p->cfg_p->key_compare(
+                oc_bpt_nd_key_array_kth(s_p, key_array, i),
+                hi_key_p
+            )
+            < 1)
             return i;
 
-    // not possible, all the keys were smaller than [hi_key_p], the optimization 
+    // not possible, all the keys were smaller than [hi_key_p], the optimization
     // should have caught this
     oc_utl_assert(0);
     return length;
@@ -131,24 +142,24 @@ static Oc_bpt_node *lookup_key_in_index_node(
     Oc_bpt_node *node_p,
     struct Oc_bpt_key *key_p,
     int *idx_po,
-    struct Oc_bpt_key *hi_key_pio)
-{
+    struct Oc_bpt_key *hi_key_pio
+) {
     uint64 child_addr;
-    
-    child_addr = oc_bpt_nd_index_lookup_key(wu_p, s_p, node_p, key_p,
-                                            NULL, idx_po);
-    if (*idx_po < oc_bpt_nd_num_entries(s_p, node_p)-1) {
+
+    child_addr =
+        oc_bpt_nd_index_lookup_key(wu_p, s_p, node_p, key_p, NULL, idx_po);
+    if (*idx_po < oc_bpt_nd_num_entries(s_p, node_p) - 1) {
         // if there is a higher key then update the high-bound
         struct Oc_bpt_key *hi_key_p;
 
         hi_key_p = oc_bpt_nd_get_kth_key(s_p, node_p, *idx_po + 1);
-//        printf("hi-key = %s idx=%d\n", oc_bpt_nd_string_of_key(s_p, hi_key_p), idx);
-//        printf("node=%s #entries=%d\n",
-//               oc_bpt_nd_string_of_node(s_p, node_p),
-//               oc_bpt_nd_num_entries(s_p, node_p));
-        memcpy((char*)hi_key_pio, hi_key_p, s_p->cfg_p->key_size);
+        //        printf("hi-key = %s idx=%d\n", oc_bpt_nd_string_of_key(s_p, hi_key_p), idx);
+        //        printf("node=%s #entries=%d\n",
+        //               oc_bpt_nd_string_of_node(s_p, node_p),
+        //               oc_bpt_nd_num_entries(s_p, node_p));
+        memcpy((char *)hi_key_pio, hi_key_p, s_p->cfg_p->key_size);
     }
-               
+
     return oc_bpt_nd_get_for_write(wu_p, s_p, child_addr, node_p, *idx_po);
 }
 
@@ -156,41 +167,38 @@ static void correct_min_key(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
-    struct Oc_bpt_key *key_p)
-{
-    switch (s_p->cfg_p->key_compare(
-                key_p,
-                oc_bpt_nd_min_key(s_p, node_p))) {
-    case 0:
-    case -1:
-        // nothing to do
-        break;
-    case 1:
-        /* the key is smaller than all existing keys.
+    struct Oc_bpt_key *key_p
+) {
+    switch (s_p->cfg_p->key_compare(key_p, oc_bpt_nd_min_key(s_p, node_p))) {
+        case 0:
+        case -1:
+            // nothing to do
+            break;
+        case 1:
+            /* the key is smaller than all existing keys.
          *  - replace the minimal key
          */
-        oc_bpt_trace_wu_lvl(3, OC_EV_BPT_REPLACE_MIN_IN_INDEX, wu_p, "");
-        oc_bpt_nd_index_replace_min_key(wu_p, s_p, node_p, key_p);
-        break;
+            oc_bpt_trace_wu_lvl(3, OC_EV_BPT_REPLACE_MIN_IN_INDEX, wu_p, "");
+            oc_bpt_nd_index_replace_min_key(wu_p, s_p, node_p, key_p);
+            break;
     }
 }
 
 static void update_hi_key(
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
-    struct Oc_bpt_key *hi_key_p)
-{
+    struct Oc_bpt_key *hi_key_p
+) {
     struct Oc_bpt_key *min_key_p = oc_bpt_nd_min_key(s_p, node_p);
-    
-    switch (s_p->cfg_p->key_compare(hi_key_p, min_key_p))
-    {
-    case -1:
-        // the minimal key is smaller that the hi-bound, update the hi-bound
-        memcpy((char*)hi_key_p, min_key_p, s_p->cfg_p->key_size);
-    case 0:
-    case 1:
-        // do nothing
-        break;
+
+    switch (s_p->cfg_p->key_compare(hi_key_p, min_key_p)) {
+        case -1:
+            // the minimal key is smaller that the hi-bound, update the hi-bound
+            memcpy((char *)hi_key_p, min_key_p, s_p->cfg_p->key_size);
+        case 0:
+        case 1:
+            // do nothing
+            break;
     }
 }
 
@@ -213,45 +221,62 @@ static int fill_single_leaf_b(
     int length,
     struct Oc_bpt_key *key_array,
     struct Oc_bpt_data *data_array,
-    int *nkeys_inserted_po)
-{
+    int *nkeys_inserted_po
+) {
     Oc_bpt_node *father_p, *child_p;
     struct Oc_bpt_key *min_key_p, *hi_bound_key_p;
-    int level = 0, rc=0;
-    
+    int level = 0, rc = 0;
+
     oc_bpt_trace_wu_lvl(
-        3, OC_EV_BPT_INSERT_RNG, wu_p,
+        3,
+        OC_EV_BPT_INSERT_RNG,
+        wu_p,
         "fill_single_leaf min_key=%s len=%d",
-        oc_bpt_nd_string_of_key(s_p, oc_bpt_nd_key_array_kth(s_p, key_array, 0)), length);
-    
+        oc_bpt_nd_string_of_key(
+            s_p,
+            oc_bpt_nd_key_array_kth(s_p, key_array, 0)
+        ),
+        length
+    );
+
     min_key_p = oc_bpt_nd_key_array_kth(s_p, key_array, 0);
-    oc_bpt_nd_get_for_write(wu_p, s_p, s_p->root_node_p->disk_addr,
-                            NULL/*no father to update on cow*/,0);
-    
+    oc_bpt_nd_get_for_write(
+        wu_p,
+        s_p,
+        s_p->root_node_p->disk_addr,
+        NULL /*no father to update on cow*/,
+        0
+    );
+
     // setup the high bound, initially, it poses no restrictions
-    hi_bound_key_p = (struct Oc_bpt_key*)alloca(s_p->cfg_p->key_size);
-    s_p->cfg_p->key_inc(oc_bpt_nd_key_array_kth(s_p, key_array, length-1),
-                        hi_bound_key_p);
-    
+    hi_bound_key_p = (struct Oc_bpt_key *)alloca(s_p->cfg_p->key_size);
+    s_p->cfg_p->key_inc(
+        oc_bpt_nd_key_array_kth(s_p, key_array, length - 1),
+        hi_bound_key_p
+    );
+
     if (oc_bpt_nd_is_full(s_p, s_p->root_node_p)) {
         // the root is full, split it and continue
         oc_bpt_nd_split_root(wu_p, s_p, s_p->root_node_p);
     }
-    
-    if (oc_bpt_nd_is_leaf(s_p, s_p->root_node_p))
-    {
+
+    if (oc_bpt_nd_is_leaf(s_p, s_p->root_node_p)) {
         // T has only a root node N
         // insert as much as possible into it.
         rc = oc_bpt_nd_insert_array_into_leaf(
-            wu_p, s_p,
+            wu_p,
+            s_p,
             s_p->root_node_p,
             length,
-            key_array, data_array, nkeys_inserted_po);
-        
+            key_array,
+            data_array,
+            nkeys_inserted_po
+        );
+
         oc_bpt_nd_release(wu_p, s_p, s_p->root_node_p);
         return rc;
     }
-    
+
     // T is a non-trivial tree
     correct_min_key(wu_p, s_p, s_p->root_node_p, min_key_p);
     father_p = s_p->root_node_p;
@@ -265,76 +290,100 @@ static int fill_single_leaf_b(
     while (1) {
         int idx;
         Oc_bpt_node *right_p;
-        
+
         oc_bpt_trace_wu_lvl(
-            3, OC_EV_BPT_INSERT_RNG, wu_p,
+            3,
+            OC_EV_BPT_INSERT_RNG,
+            wu_p,
             "iteration father=[%s] level=%d",
-            oc_bpt_nd_string_of_node(s_p, father_p), level);
-        
+            oc_bpt_nd_string_of_node(s_p, father_p),
+            level
+        );
+
         level++;
-        child_p = lookup_key_in_index_node(wu_p, s_p, father_p,
-                                           min_key_p,
-                                           &idx, hi_bound_key_p);
+        child_p = lookup_key_in_index_node(
+            wu_p,
+            s_p,
+            father_p,
+            min_key_p,
+            &idx,
+            hi_bound_key_p
+        );
 
         if (oc_bpt_nd_is_leaf(s_p, child_p)) {
             // [child_p] is a leaf. insert into it.
 
             if (!oc_bpt_nd_is_full(s_p, child_p)) {
-                // Leaf node with room left            
+                // Leaf node with room left
                 int eligible_len;
-                
+
                 oc_utl_debugassert(!oc_bpt_nd_is_full(s_p, child_p));
-                eligible_len = chop(wu_p, s_p, length, key_array, hi_bound_key_p);
+                eligible_len =
+                    chop(wu_p, s_p, length, key_array, hi_bound_key_p);
                 oc_utl_debugassert(eligible_len > 0);
-                
+
                 rc = oc_bpt_nd_insert_array_into_leaf(
-                    wu_p, s_p,
+                    wu_p,
+                    s_p,
                     child_p,
                     eligible_len,
-                    key_array, data_array, nkeys_inserted_po);
-                
+                    key_array,
+                    data_array,
+                    nkeys_inserted_po
+                );
+
                 oc_bpt_nd_release(wu_p, s_p, father_p);
-                oc_bpt_nd_release(wu_p, s_p, child_p);        
+                oc_bpt_nd_release(wu_p, s_p, child_p);
                 return rc;
-            }
-            else {
+            } else {
                 // Leaf node with no room to spare, split and insert
                 int eligible_len;
                 Oc_bpt_node *trg_p;
 
-                oc_utl_debugassert(!oc_bpt_nd_is_root(s_p, child_p));                
+                oc_utl_debugassert(!oc_bpt_nd_is_root(s_p, child_p));
                 right_p = oc_bpt_nd_split(wu_p, s_p, child_p);
 
                 // add into the correct node
                 switch (s_p->cfg_p->key_compare(
-                            min_key_p,
-                            oc_bpt_nd_min_key(s_p, right_p))) {
-                case 0:
-                case -1:
-                    trg_p = right_p;
-                    break;
-                case 1:
-                    update_hi_key(s_p, right_p, hi_bound_key_p);
-                    trg_p = child_p;
-                    break;
+                    min_key_p,
+                    oc_bpt_nd_min_key(s_p, right_p)
+                )) {
+                    case 0:
+                    case -1:
+                        trg_p = right_p;
+                        break;
+                    case 1:
+                        update_hi_key(s_p, right_p, hi_bound_key_p);
+                        trg_p = child_p;
+                        break;
                 }
-                
-                eligible_len = chop(wu_p, s_p, length, key_array, hi_bound_key_p);
+
+                eligible_len =
+                    chop(wu_p, s_p, length, key_array, hi_bound_key_p);
                 oc_utl_debugassert(eligible_len > 0);
-                
+
                 rc = oc_bpt_nd_insert_array_into_leaf(
-                    wu_p, s_p,
+                    wu_p,
+                    s_p,
                     trg_p,
                     eligible_len,
-                    key_array, data_array, nkeys_inserted_po);
-                
-                // replace the old binding for [idx] with bindings: 
+                    key_array,
+                    data_array,
+                    nkeys_inserted_po
+                );
+
+                // replace the old binding for [idx] with bindings:
                 //   * min(L) -> child_p
                 //   * min(R) -> right_p
-                oc_bpt_nd_index_replace_w2(wu_p, s_p, father_p,
-                                           idx,
-                                           child_p, right_p);
-                
+                oc_bpt_nd_index_replace_w2(
+                    wu_p,
+                    s_p,
+                    father_p,
+                    idx,
+                    child_p,
+                    right_p
+                );
+
                 oc_bpt_nd_release(wu_p, s_p, father_p);
                 oc_bpt_nd_release(wu_p, s_p, child_p);
                 oc_bpt_nd_release(wu_p, s_p, right_p);
@@ -350,31 +399,37 @@ static int fill_single_leaf_b(
 
         if (oc_bpt_nd_is_full(s_p, child_p)) {
             right_p = oc_bpt_nd_split(wu_p, s_p, child_p);
-            
-            // replace the old binding for [idx] with bindings: 
+
+            // replace the old binding for [idx] with bindings:
             //   * min(L) -> child_p
             //   * min(R) -> right_p
             // this cannot cause a split in F
-            oc_bpt_nd_index_replace_w2(wu_p, s_p, father_p,
-                                       idx,
-                                       child_p, right_p);
-            
+            oc_bpt_nd_index_replace_w2(
+                wu_p,
+                s_p,
+                father_p,
+                idx,
+                child_p,
+                right_p
+            );
+
             // choose if we should continue with [child_p] or with [right_p]
             switch (s_p->cfg_p->key_compare(
-                        min_key_p,
-                        oc_bpt_nd_min_key(s_p, right_p))) {
-            case 0:
-            case -1:
-                oc_bpt_nd_release(wu_p, s_p, child_p);
-                child_p = right_p;
-                break;
-            case 1:
-                update_hi_key(s_p, right_p, hi_bound_key_p);
-                oc_bpt_nd_release(wu_p, s_p, right_p);
-                break;
+                min_key_p,
+                oc_bpt_nd_min_key(s_p, right_p)
+            )) {
+                case 0:
+                case -1:
+                    oc_bpt_nd_release(wu_p, s_p, child_p);
+                    child_p = right_p;
+                    break;
+                case 1:
+                    update_hi_key(s_p, right_p, hi_bound_key_p);
+                    oc_bpt_nd_release(wu_p, s_p, right_p);
+                    break;
             }
         }
-        
+
         // release [father_p], making [child_p] the father
         oc_bpt_nd_release(wu_p, s_p, father_p);
         father_p = child_p;
@@ -388,20 +443,22 @@ int oc_bpt_op_insert_range_b(
     Oc_bpt_state *s_p,
     int length,
     struct Oc_bpt_key *key_array,
-    struct Oc_bpt_data *data_array)
-{
+    struct Oc_bpt_data *data_array
+) {
     int rc, sum;
 
     oc_utl_debugassert(length > 0);
 
-    for (rc=0, sum=0; sum < length; )
+    for (rc = 0, sum = 0; sum < length;)
         rc += fill_single_leaf_b(
-            wu_p, s_p,
+            wu_p,
+            s_p,
             length - sum,
             oc_bpt_nd_key_array_kth(s_p, key_array, sum),
             oc_bpt_nd_data_array_kth(s_p, data_array, sum),
-            &sum);
+            &sum
+        );
     oc_utl_assert(sum == length);
-    
+
     return rc;
 }

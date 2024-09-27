@@ -44,34 +44,28 @@ struct Oc_wu;
 typedef struct Oc_bpt_alt_cfg {
     uint32 key_size;
     uint32 data_size;
-    
+
     /* compare keys [key1] and [key2].
      *  return 0 if keys are equal
      *        -1 if key1 > key2
      *         1 if key1 < key2
      */
-    int         ((*key_compare)(struct Oc_bpt_key *key1_p,
-                                struct Oc_bpt_key *key2_p));
-    
+    int((*key_compare)(struct Oc_bpt_key *key1_p, struct Oc_bpt_key *key2_p));
+
     // increment [key_p]. put the result in [result_p]
-    void        ((*key_inc)(struct Oc_bpt_key *key_p,
-                            struct Oc_bpt_key *result_p));
-    
+    void((*key_inc)(struct Oc_bpt_key *key_p, struct Oc_bpt_key *result_p));
+
     // string representation of a key
-    void        ((*key_to_string)(struct Oc_bpt_key *key_p,
-                                  char *str_p,
-                                  int max_len));
-    
+    void((*key_to_string)(struct Oc_bpt_key *key_p, char *str_p, int max_len));
+
     /* release data. This is useful if the data is, like in an s-node,
      * an extent allocated on disk.
      */
-    void        ((*data_release)(struct Oc_wu *wu_p,
-                                 struct Oc_bpt_data *data));
-    
+    void((*data_release)(struct Oc_wu *wu_p, struct Oc_bpt_data *data));
+
     // string representation of data
-    void        ((*data_to_string)(struct Oc_bpt_data *data_p,
-                                   char *str_p,
-                                   int max_len));
+    void((*data_to_string)(struct Oc_bpt_data *data_p, char *str_p, int max_len)
+    );
 } Oc_bpt_alt_cfg;
 
 // A sorted list of records
@@ -83,39 +77,36 @@ typedef struct Oc_bpt_alt_state {
 void oc_bpt_alt_init_state_b(
     struct Oc_wu *wu_pi,
     struct Oc_bpt_alt_state *state_p,
-    Oc_bpt_alt_cfg *cfg_p);
+    Oc_bpt_alt_cfg *cfg_p
+);
 
-void oc_bpt_alt_create_b(
-    struct Oc_wu *wu_p,
-    struct Oc_bpt_alt_state *s_p);
+void oc_bpt_alt_create_b(struct Oc_wu *wu_p, struct Oc_bpt_alt_state *s_p);
 
 // return TRUE if this is a case of replacement. FALSE otherwise.
 bool oc_bpt_alt_insert_key_b(
     struct Oc_wu *wu_p,
     struct Oc_bpt_alt_state *s_p,
     struct Oc_bpt_key *key_p,
-    struct Oc_bpt_data *data_p);
+    struct Oc_bpt_data *data_p
+);
 
 bool oc_bpt_alt_lookup_key_b(
     struct Oc_wu *wu_p,
     struct Oc_bpt_alt_state *s_p,
     struct Oc_bpt_key *key_p,
-    struct Oc_bpt_data *data_po);    
+    struct Oc_bpt_data *data_po
+);
 
 bool oc_bpt_alt_remove_key_b(
     struct Oc_wu *wu_p,
     struct Oc_bpt_alt_state *s_p,
-    struct Oc_bpt_key *key_p);
+    struct Oc_bpt_key *key_p
+);
 
-void oc_bpt_alt_delete_b(
-    struct Oc_wu *wu_p,
-    struct Oc_bpt_alt_state *s_p);
+void oc_bpt_alt_delete_b(struct Oc_wu *wu_p, struct Oc_bpt_alt_state *s_p);
 
-bool oc_bpt_alt_dbg_validate_b(struct Oc_wu *wu_p,
-                           Oc_bpt_alt_state *s_p);
-void oc_bpt_alt_dbg_output_b(struct Oc_wu *wu_p,
-                             Oc_bpt_alt_state *s_p);
-
+bool oc_bpt_alt_dbg_validate_b(struct Oc_wu *wu_p, Oc_bpt_alt_state *s_p);
+void oc_bpt_alt_dbg_output_b(struct Oc_wu *wu_p, Oc_bpt_alt_state *s_p);
 
 /* range operations
  */
@@ -127,24 +118,28 @@ void oc_bpt_alt_lookup_range_b(
     int max_num_keys_i,
     struct Oc_bpt_key *key_array_po,
     struct Oc_bpt_data *data_array_po,
-    int *nkeys_found_po);
+    int *nkeys_found_po
+);
 
 int oc_bpt_alt_insert_range_b(
     struct Oc_wu *wu_p,
     Oc_bpt_alt_state *s_p,
     int length,
     struct Oc_bpt_key *key_array,
-    struct Oc_bpt_data *data_array);
+    struct Oc_bpt_data *data_array
+);
 
 int oc_bpt_alt_remove_range_b(
     struct Oc_wu *wu_p,
     Oc_bpt_alt_state *s_p,
     struct Oc_bpt_key *min_key_p,
-    struct Oc_bpt_key *max_key_p);
+    struct Oc_bpt_key *max_key_p
+);
 
 uint64 oc_bpt_alt_clone_b(
     struct Oc_wu *wu_p,
     Oc_bpt_alt_state *src_p,
-    Oc_bpt_alt_state *trg_p);
+    Oc_bpt_alt_state *trg_p
+);
 
 #endif

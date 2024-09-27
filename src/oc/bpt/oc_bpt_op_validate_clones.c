@@ -55,45 +55,41 @@
 
 /**********************************************************************/
 
-static void inc_b(struct Oc_wu *wu_p,
-                  struct Oc_bpt_state *s_p,
-                  Oc_bpt_node *node_p);
-static bool compare_b(struct Oc_wu *wu_p,
-                      struct Oc_bpt_state *s_p,
-                      Oc_bpt_node *node_p);
-static bool check_fs_b(
-    struct Oc_wu *wu_p,
-    int n_clones,
-    struct Oc_bpt_state *st_array[]);
+static void
+inc_b(struct Oc_wu *wu_p, struct Oc_bpt_state *s_p, Oc_bpt_node *node_p);
+static bool
+compare_b(struct Oc_wu *wu_p, struct Oc_bpt_state *s_p, Oc_bpt_node *node_p);
+static bool
+check_fs_b(struct Oc_wu *wu_p, int n_clones, struct Oc_bpt_state *st_array[]);
 
 /**********************************************************************/
 
 // Erase all previous labels
-static void erase_labels_b(struct Oc_wu *wu_p,
-                           struct Oc_bpt_state *s_p,
-                           Oc_bpt_node *node_p)
-{
+static void erase_labels_b(
+    struct Oc_wu *wu_p,
+    struct Oc_bpt_state *s_p,
+    Oc_bpt_node *node_p
+) {
     int i, num_entries;
     int *node_label_p;
-        
+
     // Erase this node's label
     node_label_p = oc_bpt_label_get(wu_p, node_p);
     *node_label_p = 0;
 
     num_entries = oc_bpt_nd_num_entries(s_p, node_p);
-    
+
     // If it is an index node then recurse into the childern
     if (!oc_bpt_nd_is_leaf(s_p, node_p)) {
-        for (i=0; i<num_entries; i++)
-        {
+        for (i = 0; i < num_entries; i++) {
             Oc_bpt_node *child_p;
             struct Oc_bpt_key *dummy_key_p;
             uint64 addr;
-            
-            oc_bpt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &addr); 
+
+            oc_bpt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &addr);
             child_p = oc_bpt_nd_get_for_read(wu_p, s_p, addr);
             erase_labels_b(wu_p, s_p, child_p);
-            oc_bpt_nd_release(wu_p, s_p, child_p);            
+            oc_bpt_nd_release(wu_p, s_p, child_p);
         }
     }
 }
@@ -106,13 +102,11 @@ static void erase_labels_b(struct Oc_wu *wu_p,
  *    - if a node's label is greater than one, then
  *      increment and do not recurse.
  */
-static void inc_b(struct Oc_wu *wu_p,
-                  struct Oc_bpt_state *s_p,
-                  Oc_bpt_node *node_p)
-{
+static void
+inc_b(struct Oc_wu *wu_p, struct Oc_bpt_state *s_p, Oc_bpt_node *node_p) {
     int *node_label_p, num_entries, i;
-    
-    node_label_p = oc_bpt_label_get(wu_p, node_p);    
+
+    node_label_p = oc_bpt_label_get(wu_p, node_p);
 
     if (*node_label_p > 0) {
         /* This node has already been labeled.
@@ -128,52 +122,45 @@ static void inc_b(struct Oc_wu *wu_p,
     *node_label_p = 1;
 
     // if it is an index node then recurse down
-    if (!oc_bpt_nd_is_leaf(s_p, node_p))
-    {
+    if (!oc_bpt_nd_is_leaf(s_p, node_p)) {
         num_entries = oc_bpt_nd_num_entries(s_p, node_p);
-        for (i=0; i<num_entries; i++) {
+        for (i = 0; i < num_entries; i++) {
             Oc_bpt_node *child_p;
             struct Oc_bpt_key *dummy_key_p;
             uint64 addr;
-            
-            oc_bpt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &addr); 
+
+            oc_bpt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &addr);
             child_p = oc_bpt_nd_get_for_read(wu_p, s_p, addr);
             inc_b(wu_p, s_p, child_p);
             oc_bpt_nd_release(wu_p, s_p, child_p);
         }
     }
-}    
-
+}
 
 // Compare the computed ref-count with the free-space count
-static bool compare_b(struct Oc_wu *wu_p,
-                      struct Oc_bpt_state *s_p,
-                      Oc_bpt_node *node_p)
-{
+static bool
+compare_b(struct Oc_wu *wu_p, struct Oc_bpt_state *s_p, Oc_bpt_node *node_p) {
     int i;
     int *node_label_p, fs_refcount;
 
     // Check if the count for this node is correct
     node_label_p = oc_bpt_label_get(wu_p, node_p);
-    fs_refcount = s_p->cfg_p->fs_get_refcount(wu_p, node_p->disk_addr);    
+    fs_refcount = s_p->cfg_p->fs_get_refcount(wu_p, node_p->disk_addr);
     if (*node_label_p != fs_refcount) {
-        printf("label=%d  fs_refcount=%d\n",
-               (*node_label_p), fs_refcount); 
+        printf("label=%d  fs_refcount=%d\n", (*node_label_p), fs_refcount);
         return FALSE;
     }
 
     // If it is an index node then recurse into the childern
-    if (!oc_bpt_nd_is_leaf(s_p, node_p))
-    {
+    if (!oc_bpt_nd_is_leaf(s_p, node_p)) {
         int num_entries = oc_bpt_nd_num_entries(s_p, node_p);
-        for (i=0; i<num_entries; i++)
-        {
+        for (i = 0; i < num_entries; i++) {
             Oc_bpt_node *child_p;
             struct Oc_bpt_key *dummy_key_p;
             uint64 addr;
             bool rc;
-            
-            oc_bpt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &addr); 
+
+            oc_bpt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &addr);
             child_p = oc_bpt_nd_get_for_read(wu_p, s_p, addr);
             rc = compare_b(wu_p, s_p, child_p);
             oc_bpt_nd_release(wu_p, s_p, child_p);
@@ -188,11 +175,8 @@ static bool compare_b(struct Oc_wu *wu_p,
 
 /**********************************************************************/
 
-static bool check_fs_b(
-    struct Oc_wu *wu_p,
-    int n_clones,
-    struct Oc_bpt_state *st_array[])
-{
+static bool
+check_fs_b(struct Oc_wu *wu_p, int n_clones, struct Oc_bpt_state *st_array[]) {
     int i;
 
     /* phase 1: zero out the labels
@@ -209,59 +193,53 @@ static bool check_fs_b(
      */
 
     // phase 0, erase all previous labels
-    for (i=0; i < n_clones; i++) {
+    for (i = 0; i < n_clones; i++) {
         struct Oc_bpt_state *s_p = st_array[i];
-        
+
         if (oc_bpt_nd_num_entries(s_p, s_p->root_node_p) > 0)
-            erase_labels_b(wu_p,
-                           s_p,
-                           s_p->root_node_p);
+            erase_labels_b(wu_p, s_p, s_p->root_node_p);
     }
-    
+
     // phase 1, increment the counters
-    for (i=0; i < n_clones; i++) {
+    for (i = 0; i < n_clones; i++) {
         struct Oc_bpt_state *s_p = st_array[i];
-        
+
         if (oc_bpt_nd_num_entries(s_p, s_p->root_node_p) > 0)
-            inc_b(wu_p,
-                  s_p,
-                  s_p->root_node_p);
+            inc_b(wu_p, s_p, s_p->root_node_p);
     }
-    
-    
+
     /* phase 2, recurse through the trees and compare lables
      *    against free-space counters.
      */
-    for (i=0; i < n_clones; i++) {
+    for (i = 0; i < n_clones; i++) {
         struct Oc_bpt_state *s_p = st_array[i];
         bool rc;
-        
+
         if (oc_bpt_nd_num_entries(s_p, s_p->root_node_p) > 0) {
-            rc = compare_b(wu_p,
-                           s_p,
-                           s_p->root_node_p);
-            if (!rc) return FALSE;
+            rc = compare_b(wu_p, s_p, s_p->root_node_p);
+            if (!rc)
+                return FALSE;
         }
     }
-    
+
     return TRUE;
 }
 
 /**********************************************************************/
 
-
 bool oc_bpt_op_validate_clones_b(
     struct Oc_wu *wu_p,
     int n_clones,
-    struct Oc_bpt_state *st_array[])
-{
+    struct Oc_bpt_state *st_array[]
+) {
     int i;
     bool rc;
-    
+
     // First validate each tree seperately
-    for (i=0; i<n_clones; i++) {
+    for (i = 0; i < n_clones; i++) {
         rc = oc_bpt_op_validate_b(wu_p, st_array[i]);
-        if (!rc) return FALSE;
+        if (!rc)
+            return FALSE;
     }
 
     // printf("checking free-space counters\n"); fflush(stdout);

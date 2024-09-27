@@ -35,10 +35,10 @@
 #include "pl_base.h"
 
 typedef struct Oc_wu {
-    struct Oc_rm_ticket  *rm_p;
+    struct Oc_rm_ticket *rm_p;
     uint32 po_id;
     uint32 req_id;
-    
+
     uint64 generation;
 } Oc_wu;
 

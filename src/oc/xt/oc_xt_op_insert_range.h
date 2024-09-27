@@ -42,8 +42,7 @@ uint64 oc_xt_op_insert_range_b(
     struct Oc_wu *wu_p,
     Oc_xt_state *s_p,
     struct Oc_xt_key *key_p,
-    struct Oc_xt_rcrd *rcrd_p);
+    struct Oc_xt_rcrd *rcrd_p
+);
 
 #endif
-
-

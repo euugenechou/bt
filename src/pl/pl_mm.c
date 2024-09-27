@@ -33,7 +33,7 @@
 #include <pthread.h>
 #include <sys/mman.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 #include "pl_base.h"
 #include "pl_base.h"
@@ -42,40 +42,35 @@
 #include "pl_mm_int.h"
 
 /***************************************************************************/
-static int align (int size, Pl_mm_alignment_t align);
+static int align(int size, Pl_mm_alignment_t align);
 
 /***************************************************************************/
 
-void* pl_mm_malloc (int size)
-{
+void *pl_mm_malloc(int size) {
     void *ptr;
     ptr = malloc(size);
     if (NULL == ptr)
-       ERR(("out of memory"));
+        ERR(("out of memory"));
 
     return ptr;
 }
 
-void pl_mm_free(void *ptr)
-{
+void pl_mm_free(void *ptr) {
     free(ptr);
 }
 
 /***************************************************************************/
 
-void pl_mm_init(void)
-{
-}
-
+void pl_mm_init(void) {}
 
 /***************************************************************************/
 // object-pools
 
 typedef struct Pl_mm_op_s {
-    int size;   // object size
-    int number; // num of objects in pool
-    Ss_slist free_list;   /* A pointer to the head of the free list */
-    void** all_objects_pp;
+    int size;  // object size
+    int number;  // num of objects in pool
+    Ss_slist free_list; /* A pointer to the head of the free list */
+    void **all_objects_pp;
 } Pl_mm_op_s;
 
 /* Align [size] by [align].
@@ -85,13 +80,12 @@ typedef struct Pl_mm_op_s {
  *   Aligning 13 by align=4 should result in 16.
  *
 */
-static int align (int size, Pl_mm_alignment_t align)
-{
-    if (1 == align) return size;
+static int align(int size, Pl_mm_alignment_t align) {
+    if (1 == align)
+        return size;
 
-    return ((size+align)/align) * align;
+    return ((size + align) / align) * align;
 }
-
 
 /*
   [Allon 11/1/06] added a member called all_objects_pp which saves
@@ -100,58 +94,58 @@ static int align (int size, Pl_mm_alignment_t align)
   (I didn't want to allocated them all at once because it may be a very
   large malloc)
  */
-bool pl_mm_pool_create( uint32 size_i,
-                        Pl_mm_alignment_t align_i,
-                        uint32 number_i,
-                        void (*init_object_i)( void *object_i),
-                        Pl_mm_op **pool_o )
-{
-    Pl_mm_op *new_pool ;
+bool pl_mm_pool_create(
+    uint32 size_i,
+    Pl_mm_alignment_t align_i,
+    uint32 number_i,
+    void (*init_object_i)(void *object_i),
+    Pl_mm_op **pool_o
+) {
+    Pl_mm_op *new_pool;
     uint32 i;
     char *obj;
     int aligned_size;
 
     if (size_i < sizeof(int))
         ERR(("can't create a memory pool for objects smaller than an integer"));
-    if (size_i < sizeof(void*))
+    if (size_i < sizeof(void *))
         ERR(("can't create a memory pool for objects smaller than a pointer"));
 
-    new_pool = (Pl_mm_op*) pl_mm_malloc(sizeof(Pl_mm_op_s));
+    new_pool = (Pl_mm_op *)pl_mm_malloc(sizeof(Pl_mm_op_s));
 
     memset(new_pool, 0, sizeof(Pl_mm_op_s));
     new_pool->size = size_i;
     new_pool->number = number_i;
-    new_pool->all_objects_pp =
-        (void**) pl_mm_malloc( sizeof(void*) * number_i );
-    memset( new_pool->all_objects_pp, 0, sizeof(void*) * number_i );
+    new_pool->all_objects_pp = (void **)pl_mm_malloc(sizeof(void *) * number_i);
+    memset(new_pool->all_objects_pp, 0, sizeof(void *) * number_i);
     *pool_o = new_pool;
     ssslist_init(&new_pool->free_list);
 
     aligned_size = align(size_i, align_i);
-    for (i=0; i<number_i ; i++) {
-	obj = (char*) pl_mm_malloc (aligned_size);
-	memset(obj, 0, aligned_size);
-        new_pool->all_objects_pp[i] = (void*)obj;
+    for (i = 0; i < number_i; i++) {
+        obj = (char *)pl_mm_malloc(aligned_size);
+        memset(obj, 0, aligned_size);
+        new_pool->all_objects_pp[i] = (void *)obj;
 
-	if (NULL != init_object_i)
-	    (*init_object_i)(obj);
-	ssslist_add_tail(&new_pool->free_list, (Ss_slist_node*)obj);
+        if (NULL != init_object_i)
+            (*init_object_i)(obj);
+        ssslist_add_tail(&new_pool->free_list, (Ss_slist_node *)obj);
     }
     return TRUE;
 }
 
-
 // destroy all objects in pool and release pool resources
-void pl_mm_pool_delete( Pl_mm_op *pool_p,
-                        void (*destroy_object_fun)( void *object_fun ) )
-{
+void pl_mm_pool_delete(
+    Pl_mm_op *pool_p,
+    void (*destroy_object_fun)(void *object_fun)
+) {
     int i;
     char *obj;
 
     assert(pool_p);
     assert(pool_p->all_objects_pp);
-    for (i=0;i<pool_p->number;i++) {
-        obj = (char*)pool_p->all_objects_pp[i];
+    for (i = 0; i < pool_p->number; i++) {
+        obj = (char *)pool_p->all_objects_pp[i];
 
         assert(obj);
 
@@ -160,32 +154,28 @@ void pl_mm_pool_delete( Pl_mm_op *pool_p,
         }
 
         pl_mm_free(obj);
-        pool_p->all_objects_pp[i]=NULL;
+        pool_p->all_objects_pp[i] = NULL;
     }
 
     pl_mm_free(pool_p->all_objects_pp);
     pl_mm_free(pool_p);
 }
 
-bool pl_mm_pool_alloc( Pl_mm_op *pool_i,
-                       void **object_o )
-{
+bool pl_mm_pool_alloc(Pl_mm_op *pool_i, void **object_o) {
     bool rc = FALSE;
 
     if (ssslist_get_length(&pool_i->free_list) > 0) {
-	*object_o = (void*) ssslist_remove_head(&pool_i->free_list);
-	rc = TRUE;
+        *object_o = (void *)ssslist_remove_head(&pool_i->free_list);
+        rc = TRUE;
     } else {
-	*object_o = NULL;
+        *object_o = NULL;
         rc = FALSE;
     }
     return rc;
 }
 
-void pl_mm_pool_free( Pl_mm_op *pool_i, void *object_i )
-{
-    ssslist_add_head(&pool_i->free_list,
-                     (Ss_slist_node*) object_i);
+void pl_mm_pool_free(Pl_mm_op *pool_i, void *object_i) {
+    ssslist_add_head(&pool_i->free_list, (Ss_slist_node *)object_i);
 }
 
 /***************************************************************************/

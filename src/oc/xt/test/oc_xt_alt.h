@@ -39,7 +39,7 @@
 #include "oc_xt_int.h"
 #include "pl_base.h"
 #include "pl_dstru.h"
- 
+
 struct Oc_wu;
 
 // A sorted list of records
@@ -51,20 +51,15 @@ typedef struct Oc_xt_alt_state {
 void oc_xt_alt_init_state_b(
     struct Oc_wu *wu_pi,
     struct Oc_xt_alt_state *state_p,
-    Oc_xt_cfg *cfg_p);
+    Oc_xt_cfg *cfg_p
+);
 
-void oc_xt_alt_create_b(
-    struct Oc_wu *wu_p,
-    struct Oc_xt_alt_state *s_p);
+void oc_xt_alt_create_b(struct Oc_wu *wu_p, struct Oc_xt_alt_state *s_p);
 
-void oc_xt_alt_delete_b(
-    struct Oc_wu *wu_p,
-    struct Oc_xt_alt_state *s_p);
+void oc_xt_alt_delete_b(struct Oc_wu *wu_p, struct Oc_xt_alt_state *s_p);
 
-bool oc_xt_alt_dbg_validate_b(struct Oc_wu *wu_p,
-                              Oc_xt_alt_state *s_p);
-void oc_xt_alt_dbg_output_b(struct Oc_wu *wu_p,
-                            Oc_xt_alt_state *s_p);
+bool oc_xt_alt_dbg_validate_b(struct Oc_wu *wu_p, Oc_xt_alt_state *s_p);
+void oc_xt_alt_dbg_output_b(struct Oc_wu *wu_p, Oc_xt_alt_state *s_p);
 
 void oc_xt_alt_lookup_range_b(
     struct Oc_wu *wu_p,
@@ -74,18 +69,21 @@ void oc_xt_alt_lookup_range_b(
     int max_num_keys_i,
     struct Oc_xt_key *key_array_po,
     struct Oc_xt_rcrd *rcrd_array_po,
-    int *n_found_po);
+    int *n_found_po
+);
 
 uint64 oc_xt_alt_insert_b(
     struct Oc_wu *wu_p,
     Oc_xt_alt_state *s_p,
     struct Oc_xt_key *key_p,
-    struct Oc_xt_rcrd *rcrd_p);
+    struct Oc_xt_rcrd *rcrd_p
+);
 
 uint64 oc_xt_alt_remove_range_b(
     struct Oc_wu *wu_p,
     Oc_xt_alt_state *s_p,
     struct Oc_xt_key *min_key_p,
-    struct Oc_xt_key *max_key_p);
+    struct Oc_xt_key *max_key_p
+);
 
 #endif

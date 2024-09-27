@@ -47,16 +47,15 @@
 /******************************************************************/
 static void test_init_fun(void);
 static void print_and_exit(struct Oc_bpt_test_state *s_p);
-    
-static void large_trees (void);
-static void small_trees (void);
+
+static void large_trees(void);
+static void small_trees(void);
 
 static Oc_bpt_test_param *param = NULL;
 
 /******************************************************************/
 // Print tree [s_p] and exit
-static void print_and_exit(struct Oc_bpt_test_state *s_p)
-{
+static void print_and_exit(struct Oc_bpt_test_state *s_p) {
     oc_bpt_test_utl_btree_display(s_p, OC_BPT_TEST_UTL_TREE_ONLY);
     oc_bpt_dbg_output_end();
     exit(1);
@@ -64,117 +63,124 @@ static void print_and_exit(struct Oc_bpt_test_state *s_p)
 
 static struct Oc_bpt_test_state *s_p = NULL;
 
-static void display_tree(void)
-{
-    oc_bpt_test_utl_btree_display(s_p, OC_BPT_TEST_UTL_TREE_ONLY);    
+static void display_tree(void) {
+    oc_bpt_test_utl_btree_display(s_p, OC_BPT_TEST_UTL_TREE_ONLY);
 }
 
-static bool validate_tree(void)
-{
+static bool validate_tree(void) {
     return oc_bpt_test_utl_btree_validate(s_p);
 }
 
 /******************************************************************/
 
-static void small_trees (void)
-{
+static void small_trees(void) {
     int i, k, start;
     struct Oc_wu wu;
     Oc_rm_ticket rm;
-    
+
     oc_bpt_test_utl_setup_wu(&wu, &rm);
 
-    for (k=0; k<3; k++) {
-        s_p = oc_bpt_test_utl_btree_init(&wu, 0);        
+    for (k = 0; k < 3; k++) {
+        s_p = oc_bpt_test_utl_btree_init(&wu, 0);
         oc_bpt_test_utl_btree_create(&wu, s_p);
-        
-        for (i=0; i<1000; i++)
-        {
+
+        for (i = 0; i < 1000; i++) {
             bool rc = TRUE;
-            
+
             switch (oc_bpt_test_utl_random_number(8)) {
-            case 0:
-                oc_bpt_test_utl_btree_remove_key(
-                    &wu,
-                    s_p, 
-                    oc_bpt_test_utl_random_number(param->max_int),
-                    &rc);
-                break;
-            case 1:
-                oc_bpt_test_utl_btree_insert(
-                    &wu,
-                    s_p, 
-                    oc_bpt_test_utl_random_number(param->max_int),
-                    &rc);
-                break;
-            case 2:
-                oc_bpt_test_utl_btree_lookup(
-                    &wu,
-                    s_p, 
-                    oc_bpt_test_utl_random_number(param->max_int),
-                    &rc);
-                break;
-            case 3:
-                oc_bpt_test_utl_btree_insert_range(
-                    &wu,
-                    s_p, 
-                    oc_bpt_test_utl_random_number(param->max_int),
-                    oc_bpt_test_utl_random_number(10),
-                    &rc);
-                break;
-            case 4:
-                start = oc_bpt_test_utl_random_number(param->max_int);
-                oc_bpt_test_utl_btree_lookup_range(
-                    &wu,
-                    s_p, 
-                    start, 
-                    start + oc_bpt_test_utl_random_number(10),
-                    &rc);
-                break;
-            case 5:
-                start = oc_bpt_test_utl_random_number(param->max_int);
-                oc_bpt_test_utl_btree_remove_range(
-                    &wu,
-                    s_p, 
-                    start, 
-                    start + oc_bpt_test_utl_random_number(10),
-                    &rc);
-                break;
-                
-            case 6:
-                // removing a lot of entries so as to reduce tree size
+                case 0:
+                    oc_bpt_test_utl_btree_remove_key(
+                        &wu,
+                        s_p,
+                        oc_bpt_test_utl_random_number(param->max_int),
+                        &rc
+                    );
+                    break;
+                case 1:
+                    oc_bpt_test_utl_btree_insert(
+                        &wu,
+                        s_p,
+                        oc_bpt_test_utl_random_number(param->max_int),
+                        &rc
+                    );
+                    break;
+                case 2:
+                    oc_bpt_test_utl_btree_lookup(
+                        &wu,
+                        s_p,
+                        oc_bpt_test_utl_random_number(param->max_int),
+                        &rc
+                    );
+                    break;
+                case 3:
+                    oc_bpt_test_utl_btree_insert_range(
+                        &wu,
+                        s_p,
+                        oc_bpt_test_utl_random_number(param->max_int),
+                        oc_bpt_test_utl_random_number(10),
+                        &rc
+                    );
+                    break;
+                case 4:
+                    start = oc_bpt_test_utl_random_number(param->max_int);
+                    oc_bpt_test_utl_btree_lookup_range(
+                        &wu,
+                        s_p,
+                        start,
+                        start + oc_bpt_test_utl_random_number(10),
+                        &rc
+                    );
+                    break;
+                case 5:
+                    start = oc_bpt_test_utl_random_number(param->max_int);
+                    oc_bpt_test_utl_btree_remove_range(
+                        &wu,
+                        s_p,
+                        start,
+                        start + oc_bpt_test_utl_random_number(10),
+                        &rc
+                    );
+                    break;
 
-                start = oc_bpt_test_utl_random_number(param->max_int);
-                
-                oc_bpt_test_utl_btree_remove_range(
-                    &wu,
-                    s_p, 
-                    start, 
-                    start + oc_bpt_test_utl_random_number(param->max_int/3),
-                    &rc);
-                break;
-            case 7:
-                // long lookup-range
-                start = oc_bpt_test_utl_random_number(param->max_int),
-                oc_bpt_test_utl_btree_lookup_range(
-                    &wu,
-                    s_p, 
-                    start,
-                    start + oc_bpt_test_utl_random_number(param->max_int/3),
-                    &rc);
-                break;
+                case 6:
+                    // removing a lot of entries so as to reduce tree size
 
-            default:
-                // do nothing
-                break;
+                    start = oc_bpt_test_utl_random_number(param->max_int);
+
+                    oc_bpt_test_utl_btree_remove_range(
+                        &wu,
+                        s_p,
+                        start,
+                        start
+                            + oc_bpt_test_utl_random_number(param->max_int / 3),
+                        &rc
+                    );
+                    break;
+                case 7:
+                    // long lookup-range
+                    start = oc_bpt_test_utl_random_number(param->max_int),
+                    oc_bpt_test_utl_btree_lookup_range(
+                        &wu,
+                        s_p,
+                        start,
+                        start
+                            + oc_bpt_test_utl_random_number(param->max_int / 3),
+                        &rc
+                    );
+                    break;
+
+                default:
+                    // do nothing
+                    break;
             }
-            
+
             if (!rc)
                 print_and_exit(s_p);
-            oc_bpt_test_utl_finalize(1);            
+            oc_bpt_test_utl_finalize(1);
         }
-        
-        if (param->statistics) oc_bpt_test_utl_statistics(s_p);         
+
+        if (param->statistics)
+            oc_bpt_test_utl_statistics(s_p);
         oc_bpt_test_utl_btree_delete(&wu, s_p);
         oc_bpt_test_utl_finalize(0);
         oc_bpt_test_utl_btree_destroy(s_p);
@@ -182,108 +188,119 @@ static void small_trees (void)
     }
 }
 
-static void large_trees (void)
-{
+static void large_trees(void) {
     int i, k, start;
     struct Oc_wu wu;
     bool small_tree;
     Oc_rm_ticket rm;
-    
+
     oc_bpt_test_utl_setup_wu(&wu, &rm);
-    s_p = oc_bpt_test_utl_btree_init(&wu, 0);        
-    printf ("running large_trees test\n");
-    
-    for (k=0; k<20; k++) {
+    s_p = oc_bpt_test_utl_btree_init(&wu, 0);
+    printf("running large_trees test\n");
+
+    for (k = 0; k < 20; k++) {
         small_tree = oc_bpt_test_utl_random_number(2);
         oc_bpt_test_utl_btree_create(&wu, s_p);
-        
-        for (i=0; i<param->num_rounds; i++)
-        {
+
+        for (i = 0; i < param->num_rounds; i++) {
             bool rc = TRUE;
 
             switch (oc_bpt_test_utl_random_number(8)) {
-            case 0:
-                oc_bpt_test_utl_btree_remove_key(
-                    &wu,
-                    s_p, 
-                    oc_bpt_test_utl_random_number(param->max_int),
-                    &rc);
-                break;
-            case 1:
-                oc_bpt_test_utl_btree_insert(
-                    &wu,
-                    s_p,
-                    oc_bpt_test_utl_random_number(param->max_int),
-                    &rc);            
-                break;
-            case 2:
-                oc_bpt_test_utl_btree_lookup(
-                    &wu,
-                    s_p,
-                    oc_bpt_test_utl_random_number(param->max_int),
-                    &rc);
-                break;
-            case 3:
-                oc_bpt_test_utl_btree_insert_range(
-                    &wu,
-                    s_p,
-                    oc_bpt_test_utl_random_number(param->max_int),
-                    oc_bpt_test_utl_random_number(10),
-                    &rc);
-                break;
-            case 4:
-                start = oc_bpt_test_utl_random_number(param->max_int);
-                oc_bpt_test_utl_btree_lookup_range(
-                    &wu,
-                    s_p,
-                    start, 
-                    start + oc_bpt_test_utl_random_number(10),
-                    &rc);
-                break;
-            case 5:
-                start = oc_bpt_test_utl_random_number(param->max_int);
-                
-                oc_bpt_test_utl_btree_remove_range(
-                    &wu,
-                    s_p,
-                    start, 
-                    start + oc_bpt_test_utl_random_number(10),
-                    &rc);
-                break;
-            case 6:
-                if (small_tree) {
-                    // remove many entries so as to reduce tree size
+                case 0:
+                    oc_bpt_test_utl_btree_remove_key(
+                        &wu,
+                        s_p,
+                        oc_bpt_test_utl_random_number(param->max_int),
+                        &rc
+                    );
+                    break;
+                case 1:
+                    oc_bpt_test_utl_btree_insert(
+                        &wu,
+                        s_p,
+                        oc_bpt_test_utl_random_number(param->max_int),
+                        &rc
+                    );
+                    break;
+                case 2:
+                    oc_bpt_test_utl_btree_lookup(
+                        &wu,
+                        s_p,
+                        oc_bpt_test_utl_random_number(param->max_int),
+                        &rc
+                    );
+                    break;
+                case 3:
+                    oc_bpt_test_utl_btree_insert_range(
+                        &wu,
+                        s_p,
+                        oc_bpt_test_utl_random_number(param->max_int),
+                        oc_bpt_test_utl_random_number(10),
+                        &rc
+                    );
+                    break;
+                case 4:
                     start = oc_bpt_test_utl_random_number(param->max_int);
-                    
+                    oc_bpt_test_utl_btree_lookup_range(
+                        &wu,
+                        s_p,
+                        start,
+                        start + oc_bpt_test_utl_random_number(10),
+                        &rc
+                    );
+                    break;
+                case 5:
+                    start = oc_bpt_test_utl_random_number(param->max_int);
+
                     oc_bpt_test_utl_btree_remove_range(
                         &wu,
                         s_p,
-                        start, 
-                        start + oc_bpt_test_utl_random_number(param->max_int/3),
-                        &rc);
-                }
-                break;
-            case 7:
-                // lonag lookup-range
-                start = oc_bpt_test_utl_random_number(param->max_int);
-                oc_bpt_test_utl_btree_lookup_range(
-                    &wu,
-                    s_p,
-                    start,
-                    start + oc_bpt_test_utl_random_number(param->max_int/3),
-                    &rc);
-                break;
+                        start,
+                        start + oc_bpt_test_utl_random_number(10),
+                        &rc
+                    );
+                    break;
+                case 6:
+                    if (small_tree) {
+                        // remove many entries so as to reduce tree size
+                        start = oc_bpt_test_utl_random_number(param->max_int);
+
+                        oc_bpt_test_utl_btree_remove_range(
+                            &wu,
+                            s_p,
+                            start,
+                            start
+                                + oc_bpt_test_utl_random_number(
+                                    param->max_int / 3
+                                ),
+                            &rc
+                        );
+                    }
+                    break;
+                case 7:
+                    // lonag lookup-range
+                    start = oc_bpt_test_utl_random_number(param->max_int);
+                    oc_bpt_test_utl_btree_lookup_range(
+                        &wu,
+                        s_p,
+                        start,
+                        start
+                            + oc_bpt_test_utl_random_number(param->max_int / 3),
+                        &rc
+                    );
+                    break;
             }
 
             if (!rc)
                 print_and_exit(s_p);
-            oc_bpt_test_utl_finalize(1);            
+            oc_bpt_test_utl_finalize(1);
         }
-        
+
         // final sanity check
         oc_bpt_test_utl_btree_compare_and_verify(s_p);
 
-        if (param->statistics) oc_bpt_test_utl_statistics(s_p);   
+        if (param->statistics)
+            oc_bpt_test_utl_statistics(s_p);
         oc_bpt_test_utl_btree_delete(&wu, s_p);
         oc_bpt_test_utl_finalize(0);
     }
@@ -294,44 +311,42 @@ static void large_trees (void)
 
 /******************************************************************/
 
-static void test_init_fun(void)
-{
+static void test_init_fun(void) {
     oc_bpt_test_utl_init();
-    
+
     // Open a task to run all the tests
     oc_bpt_dbg_output_init();
 
     oc_bpt_test_utl_set_print_fun(display_tree);
     oc_bpt_test_utl_set_validate_fun(validate_tree);
-    
+
     // random test
     switch (test_type) {
-    case OC_BPT_TEST_UTL_ANY:
-        small_trees();
-        large_trees();
-        break;
-    case OC_BPT_TEST_UTL_LARGE_TREES:
-        large_trees();
-        break;
-    case OC_BPT_TEST_UTL_SMALL_TREES:
-        small_trees();
-        break;
-    case OC_BPT_TEST_UTL_SMALL_TREES_W_RANGES:
-        break;
-    case OC_BPT_TEST_UTL_SMALL_TREES_MIXED:
-        break;
+        case OC_BPT_TEST_UTL_ANY:
+            small_trees();
+            large_trees();
+            break;
+        case OC_BPT_TEST_UTL_LARGE_TREES:
+            large_trees();
+            break;
+        case OC_BPT_TEST_UTL_SMALL_TREES:
+            small_trees();
+            break;
+        case OC_BPT_TEST_UTL_SMALL_TREES_W_RANGES:
+            break;
+        case OC_BPT_TEST_UTL_SMALL_TREES_MIXED:
+            break;
     }
 
     // verify the free-space has no block allocated
     oc_bpt_test_utl_fs_verify(0);
-    
+
     printf("   // total_ops=%d\n", param->total_ops);
     oc_bpt_dbg_output_end();
 }
 
-int main(int argc, char *argv[])
-{
-    // initialize the tracing facility 
+int main(int argc, char *argv[]) {
+    // initialize the tracing facility
     pl_trace_base_init();
 
     if (oc_bpt_test_utl_parse_cmd_line(argc, argv) == FALSE)
@@ -340,13 +355,12 @@ int main(int argc, char *argv[])
 
     // done initializing tracing
     pl_trace_base_init_done();
-    
+
     // The following line creates a new thread and must be left last in function
     // inorder to ensure deterministic behaviour.
     test_init_fun();
 
     return 0;
-}    
+}
 
 /******************************************************************/
-

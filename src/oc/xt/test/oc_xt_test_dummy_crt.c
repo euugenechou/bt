@@ -35,46 +35,24 @@
 /******************************************************************/
 #include "oc_crt_int.h"
 
+void oc_crt_init_rw_lock(Oc_crt_rw_lock *lock) {}
 
-void oc_crt_init_rw_lock(Oc_crt_rw_lock * lock)
-{
-}
+void oc_crt_lock_read(Oc_crt_rw_lock *lock) {}
 
-void oc_crt_lock_read(Oc_crt_rw_lock * lock)
-{
-}
+void oc_crt_lock_write(Oc_crt_rw_lock *lock) {}
 
-void oc_crt_lock_write(Oc_crt_rw_lock * lock)
-{
-}
+void oc_crt_unlock(Oc_crt_rw_lock *lock) {}
 
-void oc_crt_unlock(Oc_crt_rw_lock * lock)
-{
-}
+void oc_crt_init_full(Oc_crt_config *config_p) {}
 
-void oc_crt_init_full(Oc_crt_config * config_p)
-{
-}
+void oc_crt_default_config(Oc_crt_config *config_p) {}
 
-void oc_crt_default_config(Oc_crt_config *config_p)
-{
-}
+void oc_crt_init(void) {}
 
-void oc_crt_init(void)
-{
-}
+void oc_crt_yield_task(void) {}
 
-void oc_crt_yield_task(void)
-{
-}
+void oc_crt_assert(void) {}
 
-void oc_crt_assert(void)
-{
-}
-
-int oc_crt_get_thread(void)
-{
+int oc_crt_get_thread(void) {
     return 1;
 }
-
-

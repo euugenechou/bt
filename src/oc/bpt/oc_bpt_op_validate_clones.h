@@ -41,6 +41,7 @@
 bool oc_bpt_op_validate_clones_b(
     struct Oc_wu *wu_p,
     int n_clones,
-    struct Oc_bpt_state *st_array[]);
+    struct Oc_bpt_state *st_array[]
+);
 
 #endif

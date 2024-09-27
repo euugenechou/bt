@@ -42,6 +42,7 @@ bool oc_bpt_op_insert_b(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     struct Oc_bpt_key *key_p,
-    struct Oc_bpt_data *data_p);
+    struct Oc_bpt_data *data_p
+);
 
 #endif

@@ -46,8 +46,9 @@ bool oc_xt_utl_covered(
     struct Oc_wu *wu_p,
     struct Oc_xt_state *s_p,
     Oc_xt_node *node_p,
-    struct Oc_xt_key* min_key_p,
-    struct Oc_xt_key* max_key_p);
+    struct Oc_xt_key *min_key_p,
+    struct Oc_xt_key *max_key_p
+);
 
 /* Delete a sub-tree rooted at [node_p].
  *
@@ -60,7 +61,8 @@ bool oc_xt_utl_covered(
 void oc_xt_utl_delete_subtree_b(
     struct Oc_wu *wu_p,
     struct Oc_xt_state *s_p,
-    Oc_xt_node *node_p);
+    Oc_xt_node *node_p
+);
 
 /* Delete all the key-value pairs in the tree. 
  * Leave the root node empty but do not delete it.
@@ -72,8 +74,6 @@ void oc_xt_utl_delete_subtree_b(
  *
  * The root is modified, it's ref-count remains the same. 
  */
-void oc_xt_utl_delete_all_b(
-    struct Oc_wu *wu_p,
-    struct Oc_xt_state *s_p);
+void oc_xt_utl_delete_all_b(struct Oc_wu *wu_p, struct Oc_xt_state *s_p);
 
 #endif

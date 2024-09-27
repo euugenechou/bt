@@ -37,9 +37,10 @@
 
 struct Oc_xt_cfg;
 
-// The state of a b-tree. 
+// The state of a b-tree.
 typedef struct Oc_xt_state {
-    Oc_crt_rw_lock lock; // this lock is used internall. -do not- lock it externally
+    Oc_crt_rw_lock
+        lock;  // this lock is used internall. -do not- lock it externally
     struct Oc_xt_cfg *cfg_p;
     Oc_meta_data_page_hndl *root_node_p;
 } Oc_xt_state;

@@ -57,10 +57,9 @@ bool oc_bpt_test_clone_just_validate_all(void);
 void oc_bpt_test_clone_add(struct Oc_bpt_test_state *s_p);
 void oc_bpt_test_clone_delete(
     struct Oc_wu *wu_p,
-    struct Oc_bpt_test_state *s_p);
+    struct Oc_bpt_test_state *s_p
+);
 struct Oc_bpt_test_state *oc_bpt_test_clone_choose(void);
 void oc_bpt_test_clone_delete_all(struct Oc_wu *wu_p);
 
-
 /******************************************************************/
-

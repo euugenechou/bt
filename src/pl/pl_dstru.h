@@ -42,76 +42,70 @@
 ** If a given structure is a substructure, then return the structure it is
 ** part of.
 */
-#define SS_START_OF_STRUCT(node_p,type,member) \
-((type *)((unsigned int)node_p-(unsigned int)(&(((type *)0)->member))))
+#define SS_START_OF_STRUCT(node_p, type, member) \
+    ((type *)((unsigned int)node_p - (unsigned int)(&(((type *)0)->member))))
 
 /*
  * Simplistic Singly linked list  (Not thread safe)
  */
 typedef struct Ss_slist_node {
-    struct Ss_slist_node * next;
+    struct Ss_slist_node *next;
 } Ss_slist_node;
 
 typedef struct {
-    struct Ss_slist_node * first;
-    struct Ss_slist_node * last;
+    struct Ss_slist_node *first;
+    struct Ss_slist_node *last;
     int32 count;
 } Ss_slist;
 
 /*
 ** Returns true if the singly linked list is empty, false otherwise
 */
-static __inline__ bool ssslist_empty(Ss_slist *slist)
-{
+static __inline__ bool ssslist_empty(Ss_slist *slist) {
     return (bool)(slist->count == 0);
 }
 
 /*
 ** Initialses the singly linked list.
 */
-static __inline__ void ssslist_init( /*@out@*/ Ss_slist * slist) 
-{ 
-    slist->first = slist->last = (Ss_slist_node *)0; 
+static __inline__ void ssslist_init(/*@out@*/ Ss_slist *slist) {
+    slist->first = slist->last = (Ss_slist_node *)0;
     slist->count = 0;
 }
 
 /*
 ** Initialises a Singly linked list node
 */
-static __inline__ void ssslist_node_init( /*@out@*/ Ss_slist_node *slist_node) 
-{ 
-    slist_node->next = (Ss_slist_node *)0; 
+static __inline__ void ssslist_node_init(/*@out@*/ Ss_slist_node *slist_node) {
+    slist_node->next = (Ss_slist_node *)0;
 }
 
 /*
 ** Return the number of elements in a singly linked list
 */
-static __inline__ int32 ssslist_get_length(Ss_slist *slist)
-{
+static __inline__ int32 ssslist_get_length(Ss_slist *slist) {
     return slist->count;
 }
 
 /*
 ** Returns the first element of a singly linked list
 */
-/*@null@*/ static __inline__ void *ssslist_head( /*@partial@*/ Ss_slist *slist )
-{
+/*@null@*/ static __inline__ void *ssslist_head(/*@partial@*/ Ss_slist *slist) {
     return (slist->first);
 }
 
 /*
 ** Returns the last element of a singly linked list
 */
-/*@null@*/ static __inline__ void *ssslist_tail( /*@partial@*/ Ss_slist *slist )
-{
+/*@null@*/ static __inline__ void *ssslist_tail(/*@partial@*/ Ss_slist *slist) {
     return (slist->last);
 }
 
 /*
 ** Returns the element after the element given.
 */
-/*@null@*/ static __inline__ void *ssslist_next( /*@partial@*/ Ss_slist_node *node )
-{
+/*@null@*/ static __inline__ void *
+ssslist_next(/*@partial@*/ Ss_slist_node *node) {
     return (node->next);
 }
 
@@ -119,14 +113,13 @@ static __inline__ int32 ssslist_get_length(Ss_slist *slist)
 ** Calculates the number of elements in a singly linked list by iterating
 ** through the next pointers of nodes.
 */
-static __inline__ int ssslist_calculate_len (Ss_slist *slist) 
-{
+static __inline__ int ssslist_calculate_len(Ss_slist *slist) {
     int i = 0;
     Ss_slist_node *node = slist->first;
 
-    while (node != (Ss_slist_node *) 0) {
+    while (node != (Ss_slist_node *)0) {
         i++;
-        node = node -> next;
+        node = node->next;
     }
 
     return i;
@@ -135,9 +128,8 @@ static __inline__ int ssslist_calculate_len (Ss_slist *slist)
 /*
 ** Adds an element to the tail of a Singly linked list
 */
-static __inline__ void ssslist_add_tail( Ss_slist *slist,
-                                         Ss_slist_node *slist_node )
-{
+static __inline__ void
+ssslist_add_tail(Ss_slist *slist, Ss_slist_node *slist_node) {
     slist_node->next = (Ss_slist_node *)0;
     if (slist->first == (Ss_slist_node *)0) { /* First node */
         slist->first = slist->last = slist_node;
@@ -146,14 +138,13 @@ static __inline__ void ssslist_add_tail( Ss_slist *slist,
         slist->last = slist_node;
     }
     slist->count++;
-
-} 
+}
 
 /*
 ** Add an element to the head of a singly linked list
 */
-static __inline__ void ssslist_add_head(Ss_slist *slist, Ss_slist_node *slist_node)
-{
+static __inline__ void
+ssslist_add_head(Ss_slist *slist, Ss_slist_node *slist_node) {
     if (slist->first == (Ss_slist_node *)0) {
         slist_node->next = (Ss_slist_node *)0;
         slist->first = slist->last = slist_node;
@@ -162,18 +153,17 @@ static __inline__ void ssslist_add_head(Ss_slist *slist, Ss_slist_node *slist_no
         slist->first = slist_node;
     }
     slist->count++;
-
-} 
+}
 
 /*
 ** Remove, and return the head of a singly linked list
 */
-/*@null@*/ static __inline__ Ss_slist_node * ssslist_remove_head(Ss_slist *slist)
-{
+/*@null@*/ static __inline__ Ss_slist_node *ssslist_remove_head(Ss_slist *slist
+) {
     Ss_slist_node *node = slist->first;
 
     if (node) {
-        if (node->next==(Ss_slist_node*)0) { /* only the 1 node */
+        if (node->next == (Ss_slist_node *)0) { /* only the 1 node */
             slist->first = slist->last = (Ss_slist_node *)0;
         } else {
             slist->first = node->next;
@@ -191,70 +181,63 @@ static __inline__ void ssslist_add_head(Ss_slist *slist, Ss_slist_node *slist_no
     }
 
     return node;
-} 
+}
 
 /*
 ** Move a list from 1 storage place to another
 */
-static __inline__ void ssslist_move_list ( Ss_slist * source,
-                                           Ss_slist * target )
-{
-    target->first = source->first ;
-    target->last = source->last ;
-    target->count = source->count ;
-    source->first = (Ss_slist_node *)0 ;
-    source->last = (Ss_slist_node *)0 ;
+static __inline__ void ssslist_move_list(Ss_slist *source, Ss_slist *target) {
+    target->first = source->first;
+    target->last = source->last;
+    target->count = source->count;
+    source->first = (Ss_slist_node *)0;
+    source->last = (Ss_slist_node *)0;
     source->count = 0;
 } /* end ssslist_move_list */
 
-
 /* Enqueue a list at the tail of another list. 
  */
-static __inline__ void ssslist_add_list_as_tail ( Ss_slist * source,
-                                                  Ss_slist * target )
-{
+static __inline__ void
+ssslist_add_list_as_tail(Ss_slist *source, Ss_slist *target) {
     if (NULL == source->first)
-        // source list is empty. 
+        // source list is empty.
         return;
     else if (NULL == target->first) {
         // target list is empty
-        ssslist_move_list(source,target);
+        ssslist_move_list(source, target);
         return;
-    }
-    else {
+    } else {
         // both are non-empty
         target->last->next = source->first;
         target->last = source->last;
-        target->count += source->count ;
-        source->first = (Ss_slist_node *)0 ;
-        source->last = (Ss_slist_node *)0 ;
+        target->count += source->count;
+        source->first = (Ss_slist_node *)0;
+        source->last = (Ss_slist_node *)0;
         source->count = 0;
     }
 }
 
 /* Enqueue a list at the tail of another list. 
  */
-static __inline__ void ssslist_add_list_in_front ( Ss_slist * source,
-                                                   Ss_slist * target )
-{
+static __inline__ void
+ssslist_add_list_in_front(Ss_slist *source, Ss_slist *target) {
     if (NULL == source->first)
-        // source list is empty. 
+        // source list is empty.
         return;
     else if (NULL == target->first) {
         // target list is empty
-        ssslist_move_list(source,target);
+        ssslist_move_list(source, target);
         return;
-    }
-    else {
+    } else {
         // both are non-empty
-        Ss_slist_node * first_old;
-        
+        Ss_slist_node *first_old;
+
         first_old = target->first;
         target->first = source->first;
         source->last->next = first_old;
-        target->count += source->count ;
-        source->first = (Ss_slist_node *)0 ;
-        source->last = (Ss_slist_node *)0 ;
+        target->count += source->count;
+        source->first = (Ss_slist_node *)0;
+        source->last = (Ss_slist_node *)0;
         source->count = 0;
     }
 }
@@ -262,26 +245,24 @@ static __inline__ void ssslist_add_list_in_front ( Ss_slist * source,
 /*
 ** Remove a given node from a linked list
 */
-static __inline__ bool ssslist_remove_node(Ss_slist *slist,
-                                           Ss_slist_node *node)
-{
+static __inline__ bool
+ssslist_remove_node(Ss_slist *slist, Ss_slist_node *node) {
     bool found = (bool)0;
-    Ss_slist_node * temp=(Ss_slist_node *)0;
+    Ss_slist_node *temp = (Ss_slist_node *)0;
 
-    if ( slist->first == node ) {
+    if (slist->first == node) {
         temp = ssslist_remove_head(slist);
         found = (bool)1;
     } else {
-        for(temp = slist->first;
-            temp != (Ss_slist_node *)0;
-            temp = temp->next ) {
+        for (temp = slist->first; temp != (Ss_slist_node *)0;
+             temp = temp->next) {
             if (temp->next == node) {
-                found = (bool)1; 
+                found = (bool)1;
                 temp->next = node->next;
-                if (node->next == (Ss_slist_node*)0) {
-                    slist->last=temp;
+                if (node->next == (Ss_slist_node *)0) {
+                    slist->last = temp;
                 }
-                slist->count --;
+                slist->count--;
                 break; /* out of for loop */
             } /* end if */
         } /* end for */
@@ -290,48 +271,41 @@ static __inline__ bool ssslist_remove_node(Ss_slist *slist,
     return found;
 }
 
-
-
 /*
 ** Doubly linked list (Queue) (Not thread safe)
 */
 
-typedef struct Ss_dlist
-{ struct Ss_dlist_node * first;
-  struct Ss_dlist_node * last;
-  int32 count;
+typedef struct Ss_dlist {
+    struct Ss_dlist_node *first;
+    struct Ss_dlist_node *last;
+    int32 count;
 } Ss_dlist;
 
-typedef struct Ss_dlist_node
-{
-    struct Ss_dlist_node * next;
-    struct Ss_dlist_node * prev;
+typedef struct Ss_dlist_node {
+    struct Ss_dlist_node *next;
+    struct Ss_dlist_node *prev;
 } Ss_dlist_node;
-
 
 /*
 ** Checks if a dlist is empty
 */
-static __inline__ bool ssdlist_empty(Ss_dlist *dlist)
-{ 
+static __inline__ bool ssdlist_empty(Ss_dlist *dlist) {
     return (bool)(dlist->count == 0);
 }
 
 /* 
 ** Initialises a dlist
 */
-static __inline__ void ssdlist_init (/*@out@*/ Ss_dlist *dlist)
-{
+static __inline__ void ssdlist_init(/*@out@*/ Ss_dlist *dlist) {
     dlist->first = (Ss_dlist_node *)0;
-    dlist->last  = (Ss_dlist_node *)0;
+    dlist->last = (Ss_dlist_node *)0;
     dlist->count = 0;
 }
 
 /*
 ** Initialise a dlist node
 */
-static __inline__ void ssdlist_node_init (/*@out@*/ Ss_dlist_node *node)
-{
+static __inline__ void ssdlist_node_init(/*@out@*/ Ss_dlist_node *node) {
     node->next = (Ss_dlist_node *)0;
     node->prev = (Ss_dlist_node *)0;
 }
@@ -339,78 +313,69 @@ static __inline__ void ssdlist_node_init (/*@out@*/ Ss_dlist_node *node)
 /*
 ** Returns the first element of a dlist
 */
-/*@null@*/ static __inline__ void *ssdlist_head( /*@partial@*/ Ss_dlist *dlist )
-{
+/*@null@*/ static __inline__ void *ssdlist_head(/*@partial@*/ Ss_dlist *dlist) {
     return (dlist->first);
 }
 
 /*
 ** Returns the last element of a dlist
 */
-/*@null@*/ static __inline__ void *ssdlist_tail( /*@partial@*/ Ss_dlist *dlist )
-{
+/*@null@*/ static __inline__ void *ssdlist_tail(/*@partial@*/ Ss_dlist *dlist) {
     return (dlist->last);
 }
 
 /*
 ** Returns the element after the element given.
 */
-/*@null@*/ static __inline__ void *ssdlist_next( /*@partial@*/ Ss_dlist_node *node )
-{
+/*@null@*/ static __inline__ void *
+ssdlist_next(/*@partial@*/ Ss_dlist_node *node) {
     return (node->next);
 }
-       
+
 /*
 ** Returns the element before the element given
 */
-/*@null@*/ static __inline__ void *ssdlist_prev( /*@partial@*/ Ss_dlist_node *node )
-{
+/*@null@*/ static __inline__ void *
+ssdlist_prev(/*@partial@*/ Ss_dlist_node *node) {
     return (node->prev);
 }
 
-static __inline__ int32 ssdlist_get_length(Ss_dlist *dlist)
-{ 
+static __inline__ int32 ssdlist_get_length(Ss_dlist *dlist) {
     return dlist->count;
 }
-       
 
 /*
 ** Calculate the number of elements in a doubly linked list, from both
 ** sides.
 */
-static __inline__ int ssdlist_calculate_len (Ss_dlist *dlist)
-{ 
+static __inline__ int ssdlist_calculate_len(Ss_dlist *dlist) {
     int i = 0;
     int j = 0;
 
     Ss_dlist_node *node = (Ss_dlist_node *)ssdlist_head(dlist);
-    
-    while (node != (Ss_dlist_node *) 0) {
+
+    while (node != (Ss_dlist_node *)0) {
         i++;
         node = (Ss_dlist_node *)ssdlist_next(node);
     }
-        
+
     node = (Ss_dlist_node *)ssdlist_tail(dlist);
-    while (node != (Ss_dlist_node *) 0) {
+    while (node != (Ss_dlist_node *)0) {
         j++;
         node = (Ss_dlist_node *)ssdlist_prev(node);
     }
 
-    if (i!=j) {
-        ERR(("ssdlist_calculate_len, count by next %d count by prev %d",
-                 i,j));
+    if (i != j) {
+        ERR(("ssdlist_calculate_len, count by next %d count by prev %d", i, j));
     }
 
     return i;
 }
 
-
 /*
 ** Adds an element to the end of a dlist
 */
-static __inline__ void ssdlist_add_tail (Ss_dlist *dlist,
-                                         Ss_dlist_node *node)
-{
+static __inline__ void ssdlist_add_tail(Ss_dlist *dlist, Ss_dlist_node *node) {
     node->next = (Ss_dlist_node *)0;
     node->prev = dlist->last;
 
@@ -427,16 +392,14 @@ static __inline__ void ssdlist_add_tail (Ss_dlist *dlist,
 /*
 ** Adds an element to the beginning of a dlist
 */
-static __inline__ void ssdlist_add_head( Ss_dlist *dlist,
-                                         Ss_dlist_node *node )
-{
+static __inline__ void ssdlist_add_head(Ss_dlist *dlist, Ss_dlist_node *node) {
     node->prev = (Ss_dlist_node *)0;
     node->next = dlist->first;
 
     if (dlist->first != (Ss_dlist_node *)0) {
         dlist->first->prev = node;
     } else {
-        dlist->last = node; 
+        dlist->last = node;
     }
 
     dlist->first = node;
@@ -446,17 +409,18 @@ static __inline__ void ssdlist_add_head( Ss_dlist *dlist,
 /*
 ** Adds an element to a dlist before the element "before"
 */
-static __inline__ void ssdlist_add_before( Ss_dlist *dlist,
-                                           Ss_dlist_node *before, 
-                                           Ss_dlist_node *node)
-{
+static __inline__ void ssdlist_add_before(
+    Ss_dlist *dlist,
+    Ss_dlist_node *before,
+    Ss_dlist_node *node
+) {
     if (before->prev == (Ss_dlist_node *)0) {
-       ssdlist_add_head(dlist,node);
+        ssdlist_add_head(dlist, node);
     } else {
         node->prev = before->prev;
         node->next = before;
         before->prev->next = node;
-        before->prev = node; 
+        before->prev = node;
         dlist->count++;
     }
 
@@ -466,24 +430,23 @@ static __inline__ void ssdlist_add_before( Ss_dlist *dlist,
 /*
 ** Removes a given element from a dlist
 */
-/*@null@*/ static __inline__ void *ssdlist_remove( Ss_dlist *dlist,
-                                                   Ss_dlist_node *node)
-{
+/*@null@*/ static __inline__ void *
+ssdlist_remove(Ss_dlist *dlist, Ss_dlist_node *node) {
     if (node == (Ss_dlist_node *)0) {
         return node;
     }
     if (node->next != (Ss_dlist_node *)0) {
         node->next->prev = node->prev;
     } else {
-        dlist->last = node->prev; 
+        dlist->last = node->prev;
     }
 
     if (node->prev != (Ss_dlist_node *)0) {
         node->prev->next = node->next;
     } else {
-        dlist->first = node->next; 
+        dlist->first = node->next;
     }
-    
+
     dlist->count--;
 
     return node;
@@ -492,26 +455,26 @@ static __inline__ void ssdlist_add_before( Ss_dlist *dlist,
 /*
 ** Removes & returns the first element in a dlist
 */
-/*@null@*/ static __inline__ void *ssdlist_remove_head( /*@partial@*/ Ss_dlist *dlist )
-{
-    Ss_dlist_node *node=(Ss_dlist_node *)0; //return NULL by default
+/*@null@*/ static __inline__ void *
+ssdlist_remove_head(/*@partial@*/ Ss_dlist *dlist) {
+    Ss_dlist_node *node = (Ss_dlist_node *)0;  //return NULL by default
 
-    if( (node = dlist->first) != (Ss_dlist_node *)0) {
-        node = (Ss_dlist_node *)ssdlist_remove( dlist, node );
+    if ((node = dlist->first) != (Ss_dlist_node *)0) {
+        node = (Ss_dlist_node *)ssdlist_remove(dlist, node);
     }
-  
+
     return node;
-}       
+}
 
 /*
 ** Removes & returns the last element in a dlist
 */
-/*@null@*/ static __inline__ void *ssdlist_remove_tail( /*@partial@*/ Ss_dlist *dlist )
-{
+/*@null@*/ static __inline__ void *
+ssdlist_remove_tail(/*@partial@*/ Ss_dlist *dlist) {
     Ss_dlist_node *node;
 
-    if( (node = dlist->last) != (Ss_dlist_node *)0 ) {
-        node = (Ss_dlist_node *)ssdlist_remove( dlist, node );
+    if ((node = dlist->last) != (Ss_dlist_node *)0) {
+        node = (Ss_dlist_node *)ssdlist_remove(dlist, node);
     }
 
     return node;
@@ -520,19 +483,16 @@ static __inline__ void ssdlist_add_before( Ss_dlist *dlist,
 /*
 ** Move a list from 1 storage place to another
 */
-static __inline__ void ssdlist_move_list ( /*@partial@*/  Ss_dlist * source,
-                                           /*@out@*/ Ss_dlist * target )
-{
-    target->first = source->first ;
-    target->last = source->last ;  
-    target->count = source->count ;
-    source->first = (Ss_dlist_node *)0 ;
-    source->last = (Ss_dlist_node *)0 ;
+static __inline__ void ssdlist_move_list(
+    /*@partial@*/ Ss_dlist *source,
+    /*@out@*/ Ss_dlist *target
+) {
+    target->first = source->first;
+    target->last = source->last;
+    target->count = source->count;
+    source->first = (Ss_dlist_node *)0;
+    source->last = (Ss_dlist_node *)0;
     source->count = 0;
-} 
-
-
+}
 
 #endif
-
-

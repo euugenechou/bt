@@ -38,8 +38,6 @@
 #ifndef OC_XT_OP_DELETE_H
 #define OC_XT_OP_DELETE_H
 
-void oc_xt_op_delete_b(
-    struct Oc_wu *wu_p,
-    struct Oc_xt_state *s_p);
+void oc_xt_op_delete_b(struct Oc_wu *wu_p, struct Oc_xt_state *s_p);
 
 #endif

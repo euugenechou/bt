@@ -44,36 +44,44 @@ struct Oc_cb;
 struct Oc_wu;
 
 #if OC_DEBUG
-void oc_utl_trace_base_wu( bool check_thrd_id_i,
-                           Pl_trace_base_tag tag_i,
-                           int level,
-                           struct Oc_wu *wu_pi,
-                           const char *fmt_p,
-                           ...);
+void oc_utl_trace_base_wu(
+    bool check_thrd_id_i,
+    Pl_trace_base_tag tag_i,
+    int level,
+    struct Oc_wu *wu_pi,
+    const char *fmt_p,
+    ...
+);
 
-void oc_utl_trace_base_wu_lvl(bool check_thrd_id_i,
-                              Pl_trace_base_tag tag_i,
-                              int level,
-                              struct Oc_wu *wu_pi,
-                              const char *fmt_p,
-                              ...);
-                              
+void oc_utl_trace_base_wu_lvl(
+    bool check_thrd_id_i,
+    Pl_trace_base_tag tag_i,
+    int level,
+    struct Oc_wu *wu_pi,
+    const char *fmt_p,
+    ...
+);
+
 #else
 
-static inline void oc_utl_trace_base_wu( bool check_thrd_id_i,
-                                         Pl_trace_base_tag tag_i,
-                                         int level,
-                                         struct Oc_wu *wu_pi,
-                                         const char *fmt_p,
-                                         ...) {}
+static inline void oc_utl_trace_base_wu(
+    bool check_thrd_id_i,
+    Pl_trace_base_tag tag_i,
+    int level,
+    struct Oc_wu *wu_pi,
+    const char *fmt_p,
+    ...
+) {}
 
-static inline void oc_utl_trace_base_wu_lvl(bool check_thrd_id_i,
-                                            Pl_trace_base_tag tag_i,
-                                            int level,
-                                            struct Oc_wu *wu_pi,
-                                            const char *fmt_p,
-                                            ...) {}
+static inline void oc_utl_trace_base_wu_lvl(
+    bool check_thrd_id_i,
+    Pl_trace_base_tag tag_i,
+    int level,
+    struct Oc_wu *wu_pi,
+    const char *fmt_p,
+    ...
+) {}
 
 #endif
 
-#endif  /* __OC_TRACE_H_ */
+#endif /* __OC_TRACE_H_ */

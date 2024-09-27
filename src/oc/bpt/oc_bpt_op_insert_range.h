@@ -43,8 +43,7 @@ int oc_bpt_op_insert_range_b(
     Oc_bpt_state *s_p,
     int length,
     struct Oc_bpt_key *key_array,
-    struct Oc_bpt_data *data_array);
+    struct Oc_bpt_data *data_array
+);
 
 #endif
-
-

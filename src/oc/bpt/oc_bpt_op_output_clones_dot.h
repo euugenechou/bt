@@ -43,6 +43,7 @@ void oc_bpt_op_output_clones_dot_b(
     struct Oc_wu *wu_p,
     int n_clones,
     struct Oc_bpt_state *st_array[],
-    char *tag_p);
+    char *tag_p
+);
 
 #endif

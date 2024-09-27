@@ -66,7 +66,7 @@ extern Oc_xt_test_utl_type test_type;
 // setup
 void oc_xt_test_utl_init_module(void);
 bool oc_xt_test_utl_parse_cmd_line(int argc, char *argv[]);
-void oc_xt_test_utl_help_msg (void);
+void oc_xt_test_utl_help_msg(void);
 
 void oc_xt_test_utl_alt_print(void);
 
@@ -81,15 +81,22 @@ bool oc_xt_test_utl_validate(void);
 void oc_xt_test_utl_statistics(void);
 
 // modification operations
-void oc_xt_test_utl_lookup_range(Oc_wu *wu_p, uint32 lo_key, uint32 hi_key,
-                                        bool check);
+void oc_xt_test_utl_lookup_range(
+    Oc_wu *wu_p,
+    uint32 lo_key,
+    uint32 hi_key,
+    bool check
+);
 
 // Insert an extent into the tree
-void oc_xt_test_utl_insert(Oc_wu *wu_p, uint32 lo_key, uint32 len,
-                           bool check);
+void oc_xt_test_utl_insert(Oc_wu *wu_p, uint32 lo_key, uint32 len, bool check);
 
-void oc_xt_test_utl_remove_range(Oc_wu *wu_p, uint32 lo_key, uint32 hi_key,
-                                        bool check);
+void oc_xt_test_utl_remove_range(
+    Oc_wu *wu_p,
+    uint32 lo_key,
+    uint32 hi_key,
+    bool check
+);
 
 void oc_xt_test_utl_finalize(int refcnt);
 

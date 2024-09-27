@@ -36,7 +36,7 @@
  * of the x-tree.
  */
 /**********************************************************************/
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "oc_xt_test_fs.h"
@@ -58,80 +58,74 @@ struct Oc_xt_test_fs_ctx {
 
     char desc[30];
 
-    // verbose mode? 
+    // verbose mode?
     bool verbose;
 };
 /**********************************************************************/
 #define INIT_LEN (10000)
 
-struct Oc_xt_test_fs_ctx *oc_xt_test_fs_create(
-    char *str_desc_p,
-    bool verbose)
-{
+struct Oc_xt_test_fs_ctx *oc_xt_test_fs_create(char *str_desc_p, bool verbose) {
     struct Oc_xt_test_fs_ctx *ctx_p;
-    
-    ctx_p = (struct Oc_xt_test_fs_ctx *) malloc(sizeof(struct Oc_xt_test_fs_ctx));
+
+    ctx_p =
+        (struct Oc_xt_test_fs_ctx *)malloc(sizeof(struct Oc_xt_test_fs_ctx));
     oc_utl_assert(ctx_p);
     memset(ctx_p, 0, sizeof(struct Oc_xt_test_fs_ctx));
     ctx_p->len = INIT_LEN;
-    ctx_p->fs_array = (char*) malloc(INIT_LEN);
+    ctx_p->fs_array = (char *)malloc(INIT_LEN);
     memset(ctx_p->fs_array, 0, INIT_LEN);
     memset(ctx_p->desc, 0, 30);
     strncpy(ctx_p->desc, str_desc_p, 30);
     ctx_p->verbose = verbose;
-    
+
     return ctx_p;
 }
 
 // allocate an extent of [len] units in free-space [ctx_p]
-uint32 oc_xt_test_fs_alloc(struct Oc_xt_test_fs_ctx *ctx_p,
-                           uint32 len)
-{
-    int i,j;
+uint32 oc_xt_test_fs_alloc(struct Oc_xt_test_fs_ctx *ctx_p, uint32 len) {
+    int i, j;
     uint32 ofs;
 
     if (ctx_p->verbose) {
         printf("// alloc [%s] (len=%lu)\n", ctx_p->desc, len);
         fflush(stdout);
     }
-    
+
     // look for an existing contiguous extent of size [len]
-    for (i=0, j=0, ofs=0; i<ctx_p->len; i++) {
+    for (i = 0, j = 0, ofs = 0; i < ctx_p->len; i++) {
         if (!ctx_p->fs_array[i]) {
             if (0 == j) {
                 ofs = i;
                 j++;
-            }
-            else {
+            } else {
                 j++;
             }
-            
+
             if (len == j) {
                 // found a contiguous unallocated area, mark it
                 // as allocated
                 int k;
-                
-                for (k=ofs; k<ofs+len; k++)
+
+                for (k = ofs; k < ofs + len; k++)
                     ctx_p->fs_array[k] = TRUE;
                 goto done;
             }
-        }
-        else {
+        } else {
             // zero out the count
-            j=0;
+            j = 0;
             ofs = 0;
         }
     }
 
     // if not found, double the size of [fs_array]
-    printf("// resize FS, now=%u\n", ctx_p->len *2);
-    ctx_p->fs_array = (char*) realloc(ctx_p->fs_array, ctx_p->len *2);
+    printf("// resize FS, now=%u\n", ctx_p->len * 2);
+    ctx_p->fs_array = (char *)realloc(ctx_p->fs_array, ctx_p->len * 2);
     oc_utl_assert(ctx_p);
     memset(&ctx_p->fs_array[ctx_p->len], 0, ctx_p->len);
 
-    // allocate in the new area 
-    ofs = ctx_p->len+1;
-    for (i=ctx_p->len+1; i<=ctx_p->len + len; i++)
+    // allocate in the new area
+    ofs = ctx_p->len + 1;
+    for (i = ctx_p->len + 1; i <= ctx_p->len + len; i++)
         ctx_p->fs_array[i] = TRUE;
 
     ctx_p->len = 2 * ctx_p->len;
@@ -142,19 +136,20 @@ done:
 }
 
 // deallocate an extent of [len] units in free-space [ctx_p]
-void oc_xt_test_fs_dealloc(struct Oc_xt_test_fs_ctx *ctx_p,
-                           uint32 ofs,
-                           uint32 len)
-{
+void oc_xt_test_fs_dealloc(
+    struct Oc_xt_test_fs_ctx *ctx_p,
+    uint32 ofs,
+    uint32 len
+) {
     uint32 i;
 
     if (ctx_p->verbose) {
         printf("// dealloc [%s] (ofs=%lu, len=%lu)\n", ctx_p->desc, ofs, len);
         fflush(stdout);
     }
-    
+
     // set to FALSE the state of all the units in the range
-    for (i=ofs; i<ofs+len; i++) {
+    for (i = ofs; i < ofs + len; i++) {
         oc_utl_assert(ctx_p->fs_array[i]);
         ctx_p->fs_array[i] = FALSE;
     }
@@ -163,43 +158,43 @@ void oc_xt_test_fs_dealloc(struct Oc_xt_test_fs_ctx *ctx_p,
     oc_utl_assert(ctx_p->tot_alloc >= 0);
 }
 
-
 // return TRUE if [ctx_p] is unallocated starting at offset [len]
-static bool make_sure_is_unallocated(
-    struct Oc_xt_test_fs_ctx *ctx_p,
-    uint32 len)
-{
+static bool
+make_sure_is_unallocated(struct Oc_xt_test_fs_ctx *ctx_p, uint32 len) {
     int i;
-    
-    for (i=len; i<ctx_p->len; i++)
+
+    for (i = len; i < ctx_p->len; i++)
         if (ctx_p->fs_array[i])
             return FALSE;
 
     return TRUE;
 }
-    
+
 /* compare two free-space instances. Return TRUE if they are equal, FALSE
  * otherwise.
  */
-bool oc_xt_test_fs_compare(struct Oc_xt_test_fs_ctx *ctx1_p,
-                           struct Oc_xt_test_fs_ctx *ctx2_p)
-{
+bool oc_xt_test_fs_compare(
+    struct Oc_xt_test_fs_ctx *ctx1_p,
+    struct Oc_xt_test_fs_ctx *ctx2_p
+) {
     int i;
-    
+
     if (ctx1_p->verbose) {
-        printf("// comparing FS implementations, [%s]=%d [%s]=%d\n",
-               ctx1_p->desc, 
-               ctx1_p->tot_alloc,
-               ctx2_p->desc,           
-               ctx2_p->tot_alloc);
+        printf(
+            "// comparing FS implementations, [%s]=%d [%s]=%d\n",
+            ctx1_p->desc,
+            ctx1_p->tot_alloc,
+            ctx2_p->desc,
+            ctx2_p->tot_alloc
+        );
         fflush(stdout);
     }
     if (ctx1_p->tot_alloc != ctx2_p->tot_alloc)
         return FALSE;
-        
+
     // the two free-space instance may have different length.
     // we are only interested in comparing the allocated areas.
-    for (i=0; i<ctx1_p->len; i++) {
+    for (i = 0; i < ctx1_p->len; i++) {
         if (ctx1_p->fs_array[i] != ctx2_p->fs_array[i])
             return FALSE;
     }
@@ -212,6 +207,5 @@ bool oc_xt_test_fs_compare(struct Oc_xt_test_fs_ctx *ctx1_p,
     else
         return make_sure_is_unallocated(ctx1_p, ctx2_p->len);
 }
-
 
 /**********************************************************************/

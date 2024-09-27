@@ -45,5 +45,5 @@ void oc_utl_trk_abort(struct Oc_wu *wu_p);
  * For making sure all work-unit locks have really been released. 
  */
 void oc_utl_trk_finalize(struct Oc_wu *wu_pi);
-    
+
 #endif

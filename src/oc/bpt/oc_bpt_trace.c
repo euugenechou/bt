@@ -39,10 +39,12 @@
 #include "oc_wu_s.h"
 /**********************************************************************/
 
-#define CASE(s) case s: return #s ; break
+#define CASE(s)    \
+    case s:        \
+        return #s; \
+        break
 
-const char *oc_bpt_string_of_trace_event(int ev_i)
-{
+const char *oc_bpt_string_of_trace_event(int ev_i) {
     switch (ev_i) {
         CASE(OC_EV_BPT_LOOKUP_KEY);
         CASE(OC_EV_BPT_INSERT);
@@ -54,14 +56,14 @@ const char *oc_bpt_string_of_trace_event(int ev_i)
         CASE(OC_EV_BPT_REMOVE_RANGE);
         CASE(OC_EV_BPT_VALIDATE);
         CASE(OC_EV_BPT_VALIDATE_CLONES);
-        
+
         CASE(OC_EV_BPT_ATTR_INIT);
         CASE(OC_EV_BPT_ATTR_SET);
-        CASE(OC_EV_BPT_ATTR_GET);    
+        CASE(OC_EV_BPT_ATTR_GET);
         CASE(OC_EV_BPT_QUERY);
         CASE(OC_EV_BPT_INIT_CFG);
         CASE(OC_EV_BPT_DESTROY_STATE);
-    
+
         CASE(OC_EV_BPT_LEAF_SPLIT);
         CASE(OC_EV_BPT_ROOT_SPLIT);
         CASE(OC_EV_BPT_INDEX_SPLIT);
@@ -83,46 +85,50 @@ const char *oc_bpt_string_of_trace_event(int ev_i)
         CASE(OC_EV_BPT_ND_MOVE_MIN_KEY);
         CASE(OC_EV_BPT_ND_MOVE_MAX_KEY);
         CASE(OC_EV_BPT_ND_NEW_LEAF_ENTRY);
-        
+
         CASE(OC_EV_BPT_COW_ROOT_AND_UPDATE);
         CASE(OC_EV_BPT_CLONE);
         CASE(OC_EV_BPT_INIT_STATE);
         CASE(OC_EV_BPT_ITER);
-        
-    default:
-        ERR(("no such case"));
+
+        default:
+            ERR(("no such case"));
     }
 }
 
 #if LODESTONE_DEBUG
-void oc_bpt_trace_wu_lvl(int level,
-                         Oc_bpt_trace_event ev,
-                         Oc_wu *wu_pi,
-                         const char *fmt_p,
-                         ...)
-{
+void oc_bpt_trace_wu_lvl(
+    int level,
+    Oc_bpt_trace_event ev,
+    Oc_wu *wu_pi,
+    const char *fmt_p,
+    ...
+) {
     uint32 req_id = 0;
     uint32 po_id = 0;
-    
+
     if (osd_trace_is_set(OSD_TRACE_OC_BPT, level)) {
         va_list args;
-        char buf [100];
-        
+        char buf[100];
+
         va_start(args, fmt_p);
         vsnprintf(buf, 100, fmt_p, args);
         va_end(args);
-        
+
         if (wu_pi) {
             req_id = wu_pi->req_id;
             po_id = wu_pi->po_id;
-        } 
-        
-        osd_trace(OSD_TRACE_OC_BPT,
-                  level,
-                  "(req=%lu, po=%lu, %s, %s)\n",
-                  req_id, po_id, 
-                  oc_bpt_string_of_trace_event(ev),
-                  buf);
+        }
+
+        osd_trace(
+            OSD_TRACE_OC_BPT,
+            level,
+            "(req=%lu, po=%lu, %s, %s)\n",
+            req_id,
+            po_id,
+            oc_bpt_string_of_trace_event(ev),
+            buf
+        );
     }
 }
 #endif

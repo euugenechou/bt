@@ -46,8 +46,9 @@ bool oc_bpt_utl_covered(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
-    struct Oc_bpt_key* min_key_p,
-    struct Oc_bpt_key* max_key_p);
+    struct Oc_bpt_key *min_key_p,
+    struct Oc_bpt_key *max_key_p
+);
 
 /* Delete a sub-tree rooted at [node_p].
  *
@@ -60,7 +61,8 @@ bool oc_bpt_utl_covered(
 void oc_bpt_utl_delete_subtree_b(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p);
+    Oc_bpt_node *node_p
+);
 
 /* Delete all the key-value pairs in the tree. 
  * Leave the root node empty but do not delete it.
@@ -72,10 +74,7 @@ void oc_bpt_utl_delete_subtree_b(
  *
  * The root is modified, it's ref-count remains the same. 
  */
-void oc_bpt_utl_delete_all_b(
-    struct Oc_wu *wu_p,
-    struct Oc_bpt_state *s_p);
-
+void oc_bpt_utl_delete_all_b(struct Oc_wu *wu_p, struct Oc_bpt_state *s_p);
 
 /* Traverse the set of nodes in tree [s_p] and apply
  * function [iter_f] to them. 
@@ -83,7 +82,8 @@ void oc_bpt_utl_delete_all_b(
 void oc_bpt_utl_iter_b(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    void (*iter_f)(struct Oc_wu *, Oc_bpt_node*),
-    Oc_bpt_node *node_p );    
+    void (*iter_f)(struct Oc_wu *, Oc_bpt_node *),
+    Oc_bpt_node *node_p
+);
 
 #endif

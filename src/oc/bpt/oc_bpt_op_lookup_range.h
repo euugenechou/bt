@@ -53,8 +53,7 @@ typedef struct Oc_bpt_op_lookup_range {
 void oc_bpt_op_lookup_range_b(
     struct Oc_wu *wu_p,
     Oc_bpt_state *s_p,
-    Oc_bpt_op_lookup_range *lkr_p );
+    Oc_bpt_op_lookup_range *lkr_p
+);
 
 #endif
-
-

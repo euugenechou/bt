@@ -4,3 +4,5 @@ obj
 src/.depend
 *~
 cscope*
+.cache
+compile_commands.json

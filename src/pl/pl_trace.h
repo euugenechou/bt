@@ -49,22 +49,16 @@ typedef enum Pl_trace_event {
     PL_EV_SEMA_PIPE_POST,
     PL_EV_SEMA_PIPE_WAIT,
 
-    PL_EV_IO, 
-    PL_EV_IO_SECOND, 
+    PL_EV_IO,
+    PL_EV_IO_SECOND,
 } Pl_trace_event;
 
 #if OC_DEBUG
-void pl_trace( int level,
-               Pl_trace_event ev,
-               const char *fmt_p,
-               ...);
+void pl_trace(int level, Pl_trace_event ev, const char *fmt_p, ...);
 
 #else
-static inline void pl_trace( int level,
-                             Pl_trace_event ev, 
-                             const char *fmt_p,
-                             ...)
-{}
+static inline void
+pl_trace(int level, Pl_trace_event ev, const char *fmt_p, ...) {}
 #endif
 
 #endif

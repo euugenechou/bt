@@ -34,7 +34,7 @@
  *
  * Handling of meta-data nodes 
  */
-/**********************************************************************/ 
+/**********************************************************************/
 #ifndef OC_XT_TEST_VD_H
 #define OC_XT_TEST_VD_H
 
@@ -43,13 +43,13 @@
 
 #define OC_XT_TEST_ND_SIZE (1256)
 
-Oc_xt_node* oc_xt_test_nd_alloc(struct Oc_wu *wu_p);
+Oc_xt_node *oc_xt_test_nd_alloc(struct Oc_wu *wu_p);
 void oc_xt_test_nd_dealloc(struct Oc_wu *wu_p, uint64 addr);
-Oc_xt_node* oc_xt_test_nd_get(struct Oc_wu *wu_p, uint64 addr);
+Oc_xt_node *oc_xt_test_nd_get(struct Oc_wu *wu_p, uint64 addr);
 void oc_xt_test_nd_release(struct Oc_wu *wu_p, Oc_xt_node *node_p);
 void oc_xt_test_nd_mark_dirty(struct Oc_wu *wu_p, Oc_xt_node *node_p);
 
-int  oc_xt_test_nd_get_refcount(void);
+int oc_xt_test_nd_get_refcount(void);
 
 void oc_xt_test_nd_init(void);
 #endif

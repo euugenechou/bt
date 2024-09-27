@@ -52,24 +52,24 @@ typedef enum {
     // Utility, making sure nobody uses component zero by mistake
     OC_MIN_COMP = 0,
 
-    OC_CRT,     // Co-routines.
-    OC_IO,      // The IO client
-    OC_FS,      // The free-space
-    OC_BT,      // The b-tree
-    OC_SN,      // The s-node
-    OC_CAT,     // The catalog
-    OC_OCT,     // object catalog
-    OC_PCT,     // partition catalog
-    OC_RM,      // The resource-manager
-    OC_SM,      // The state-machine
-    OC_OH,      // The object-handle
-    OC_PH,      // The partition-handle
-    OC_RT,      // Running Table
-    OC_PM,      // Page-Manager
-    OC_JL,      // Journal
-    OC_RC,      // The IO client
+    OC_CRT,  // Co-routines.
+    OC_IO,  // The IO client
+    OC_FS,  // The free-space
+    OC_BT,  // The b-tree
+    OC_SN,  // The s-node
+    OC_CAT,  // The catalog
+    OC_OCT,  // object catalog
+    OC_PCT,  // partition catalog
+    OC_RM,  // The resource-manager
+    OC_SM,  // The state-machine
+    OC_OH,  // The object-handle
+    OC_PH,  // The partition-handle
+    OC_RT,  // Running Table
+    OC_PM,  // Page-Manager
+    OC_JL,  // Journal
+    OC_RC,  // The IO client
 
-    OC_MAX_COMP, // Utility
+    OC_MAX_COMP,  // Utility
 } Oc_subcomponent_id;
 
 /* Anonymous struct for defining the work-unit. The actual Oc_wu
@@ -85,27 +85,27 @@ typedef enum Oc_atomic {
     OC_NON_ATOMIC,
 } Oc_atomic;
 
-typedef void*(*thread_routine_t)(void*);
+typedef void *(*thread_routine_t)(void *);
 
 // A way to hide a FILE structure from <stdio.h>
 struct Oc_utl_file;
 
 /* Asserts used for the OC components
  */
-#define oc_utl_assert( expr ) assert(expr)
+#define oc_utl_assert(expr) assert(expr)
 
 #ifdef OC_DEBUG
-#define oc_utl_debugassert( expr ) oc_utl_assert( expr )
+    #define oc_utl_debugassert(expr) oc_utl_assert(expr)
 #else
-#define oc_utl_debugassert( expr )
+    #define oc_utl_debugassert(expr)
 #endif
 
 #ifndef MAX
-#define MAX(x,y) ((x) < (y) ? (y) : (x))
+    #define MAX(x, y) ((x) < (y) ? (y) : (x))
 #endif
 
 #ifndef MIN
-#define MIN(x,y) ((x) > (y) ? (y) : (x))
+    #define MIN(x, y) ((x) > (y) ? (y) : (x))
 #endif
 
 void oc_utl_default_config(Oc_utl_config *conf_po);
@@ -115,13 +115,12 @@ void oc_utl_init_full(Oc_utl_config *conf_pi);
 void oc_utl_free_resources();
 
 /** Initialize a 32-bit Linear Redundancy Check */
-static inline uint32 oc_utl_lrc_init(void)
-{
+static inline uint32 oc_utl_lrc_init(void) {
     return 0;
 }
 
 /** Update a 32-bit Linear Redundancy Check */
-uint32 oc_utl_lrc_update(uint32 lrc, char * buf, int len);
+uint32 oc_utl_lrc_update(uint32 lrc, char *buf, int len);
 
 const char *oc_utl_string_of_subcomponent_id(Oc_subcomponent_id id);
 

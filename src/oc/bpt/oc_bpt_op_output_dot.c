@@ -47,78 +47,77 @@ static void output_b(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
-    char *tag_p, int level)
-{
+    char *tag_p,
+    int level
+) {
     int i, num_entries;
     struct Oc_bpt_key *key_p, *min_key_p;
     char key_buf[20], min_key_buf[20];
 
     min_key_p = oc_bpt_nd_min_key(s_p, node_p);
     s_p->cfg_p->key_to_string(min_key_p, min_key_buf, 20);
-    
+
     // describe this node
-    printf("    %s_%d_%s [label=\"",
-            tag_p, level, min_key_buf);
+    printf("    %s_%d_%s [label=\"", tag_p, level, min_key_buf);
     num_entries = oc_bpt_nd_num_entries(s_p, node_p);
-    for (i=0; i< num_entries; i++)
-    {
+    for (i = 0; i < num_entries; i++) {
         key_p = oc_bpt_nd_get_kth_key(s_p, node_p, i);
         s_p->cfg_p->key_to_string(key_p, key_buf, 20);
         printf("<f%d> %s", i, key_buf);
-        if (i != num_entries-1) printf ("| ");
+        if (i != num_entries - 1)
+            printf("| ");
     }
     printf("\"];\n");
-    
+
     // if it is an index node then recurse down
     if (!oc_bpt_nd_is_leaf(s_p, node_p)) {
-        for (i=0; i<num_entries; i++) {
+        for (i = 0; i < num_entries; i++) {
             Oc_bpt_node *child_p;
             struct Oc_bpt_key *dummy_key_p;
             uint64 addr;
-            
-            oc_bpt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &addr); 
+
+            oc_bpt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &addr);
             child_p = oc_bpt_nd_get_for_read(wu_p, s_p, addr);
-            
-            output_b(wu_p, s_p,
-                     child_p,
-                     tag_p, level+1);
+
+            output_b(wu_p, s_p, child_p, tag_p, level + 1);
             oc_bpt_nd_release(wu_p, s_p, child_p);
         }
     }
-    
+
     // If it is an index node add pointers to the childern
     if (!oc_bpt_nd_is_leaf(s_p, node_p)) {
-        for (i=0; i<num_entries; i++)
-        {
+        for (i = 0; i < num_entries; i++) {
             Oc_bpt_node *child_p;
             struct Oc_bpt_key *dummy_key_p;
             uint64 addr;
-            
-            oc_bpt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &addr); 
+
+            oc_bpt_nd_index_get_kth(s_p, node_p, i, &dummy_key_p, &addr);
             child_p = oc_bpt_nd_get_for_read(wu_p, s_p, addr);
-            
+
             key_p = oc_bpt_nd_min_key(s_p, child_p);
             s_p->cfg_p->key_to_string(key_p, key_buf, 20);
-            printf("    %s_%d_%s -> %s_%d_%s;\n",
-                    tag_p, level, min_key_buf,
-                    tag_p, level+1, key_buf );
-            oc_bpt_nd_release(wu_p, s_p, child_p);            
+            printf(
+                "    %s_%d_%s -> %s_%d_%s;\n",
+                tag_p,
+                level,
+                min_key_buf,
+                tag_p,
+                level + 1,
+                key_buf
+            );
+            oc_bpt_nd_release(wu_p, s_p, child_p);
         }
     }
 }
-
 
 void oc_bpt_op_output_dot_b(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    char *tag_p)
-{
+    char *tag_p
+) {
     if (oc_bpt_nd_num_entries(s_p, s_p->root_node_p) == 0) {
         printf("    // tree is empty\n");
-    }
-    else {
+    } else {
         output_b(wu_p, s_p, s_p->root_node_p, tag_p, 0);
     }
 }
-
-

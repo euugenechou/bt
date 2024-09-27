@@ -50,9 +50,9 @@ void oc_utl_htbl_create(
     Oc_utl_htbl *htbl,
     int size,
     char *slot_array_pi,
-    Oc_utl_htbl_hash      hash,
-    Oc_utl_htbl_compare   compare
-    );
+    Oc_utl_htbl_hash hash,
+    Oc_utl_htbl_compare compare
+);
 
 // abruptly free up memory of htbl
 // for a clean release, user may want to use oc_utl_htbl_iter_discard
@@ -61,7 +61,7 @@ void oc_utl_htbl_free(Oc_utl_htbl *htbl);
 
 /** lookup in the table.
  */
-void* oc_utl_htbl_lookup(Oc_utl_htbl *h_i, void *key_i);
+void *oc_utl_htbl_lookup(Oc_utl_htbl *h_i, void *key_i);
 
 int oc_utl_htbl_exists(Oc_utl_htbl *h_i, void *key_i);
 
@@ -70,29 +70,33 @@ int oc_utl_htbl_exists(Oc_utl_htbl *h_i, void *key_i);
  * first check if the item already exists. 
  *
  */
-void oc_utl_htbl_insert(Oc_utl_htbl *h_i, void *key_i, void* _elem);
+void oc_utl_htbl_insert(Oc_utl_htbl *h_i, void *key_i, void *_elem);
 
 bool oc_utl_htbl_remove(Oc_utl_htbl *h_i, void *key_i);
 
-void oc_utl_htbl_iter(Oc_utl_htbl *h_i,
-                      void (*fun)(void *elem, void *ctx),
-                      void *ctx);
+void oc_utl_htbl_iter(
+    Oc_utl_htbl *h_i,
+    void (*fun)(void *elem, void *ctx),
+    void *ctx
+);
 
 /* Same as above, but throw out any items that [fun] returns TRUE for.
  */
-void oc_utl_htbl_iter_discard( Oc_utl_htbl *h_i,
-                           bool (*fun)(void *elem, void *data),
-                           void *additional_data );
+void oc_utl_htbl_iter_discard(
+    Oc_utl_htbl *h_i,
+    bool (*fun)(void *elem, void *data),
+    void *additional_data
+);
 
-void oc_utl_htbl_iter_mv_to_list( Oc_utl_htbl *h_i,
-                              bool (*fun)(void *elem, void *data),
-                              void *additional_data,
-                                  Ss_slist *list_pi );
+void oc_utl_htbl_iter_mv_to_list(
+    Oc_utl_htbl *h_i,
+    bool (*fun)(void *elem, void *data),
+    void *additional_data,
+    Ss_slist *list_pi
+);
 
 /* lookup in the table, and extract the item if it exists
  */
-void* oc_utl_htbl_extract(Oc_utl_htbl *h_i, void *key_i);
+void *oc_utl_htbl_extract(Oc_utl_htbl *h_i, void *key_i);
 
-#endif 
-
-
+#endif

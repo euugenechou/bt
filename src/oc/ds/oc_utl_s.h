@@ -36,7 +36,7 @@
 #include "oc_crt_s.h"
 #include <sys/time.h>
 
-#define OC_PACKED __attribute__ ((__packed__))
+#define OC_PACKED __attribute__((__packed__))
 
 // size of attributes buffer inside a btree root node.
 #define OC_UTL_ATTRIBUTES_BUF_SIZE 128
@@ -47,31 +47,31 @@
 typedef struct Oc_meta_data_page_hdr {
     char eye_catcher[4];
     uint32 lrc;
-    uint16 component_id; // same as Oc_subcomponent_id
+    uint16 component_id;  // same as Oc_subcomponent_id
     uint16 version;
 
-    char reserved[12];    // reserved for future use
+    char reserved[12];  // reserved for future use
 } OC_PACKED Oc_meta_data_page_hdr;
 
 // Minimal data-structure for handling a meta-data page
 typedef struct Oc_meta_data_page_hndl {
-    // read-write lock for the page    
-    Oc_crt_rw_lock lock; 
+    // read-write lock for the page
+    Oc_crt_rw_lock lock;
 
-    // pointer to an actual data buffer of size SS_PAGE_SIZE    
+    // pointer to an actual data buffer of size SS_PAGE_SIZE
     char *data;
 
     // address of this node on disk, in bytes (not sectors).
-    uint64 disk_addr;          
+    uint64 disk_addr;
 } Oc_meta_data_page_hndl;
 
 typedef struct Oc_utl_config {
-    uint64 lun_size;                // LUN size in bytes
+    uint64 lun_size;  // LUN size in bytes
     //    int    num_pages;               // The number of pages
-    uint16 version;                 // Version number of ObjectStone
+    uint16 version;  // Version number of ObjectStone
     //    int    max_num_pages_in_io;     // Maximum number of pages in a single IO
-    char   data_dev[60];            // Device name to store data
-    char   ljl_dev[60];             // Device name to store journal
+    char data_dev[60];  // Device name to store data
+    char ljl_dev[60];  // Device name to store journal
 
 } Oc_utl_config;
 
@@ -80,9 +80,9 @@ typedef struct Oc_utl_config {
 struct Oc_crt_rw_lock;
 
 typedef struct Oc_utl_trk_ref_set {
-    struct Oc_crt_rw_lock *locks[OC_UTL_TRK_MAX_REFS+1];
-    int cursor;   // The first empty location
-    int sum;      // The total number of locks referenced. 
+    struct Oc_crt_rw_lock *locks[OC_UTL_TRK_MAX_REFS + 1];
+    int cursor;  // The first empty location
+    int sum;  // The total number of locks referenced.
 } Oc_utl_trk_ref_set;
 
 typedef struct Oc_utl_rm {

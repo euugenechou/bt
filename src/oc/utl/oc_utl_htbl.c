@@ -42,7 +42,6 @@
 #include <memory.h>
 #include <stdio.h>
 
-
 /* Create a hashtable. User needs to provide four functions: hash, compare, get_next,
  * and set_next.
  */
@@ -50,21 +49,20 @@ void oc_utl_htbl_create(
     Oc_utl_htbl *htbl,
     int size,
     char *slot_array_pi,
-    Oc_utl_htbl_hash      hash,
-    Oc_utl_htbl_compare   compare)
-{
+    Oc_utl_htbl_hash hash,
+    Oc_utl_htbl_compare compare
+) {
     memset(htbl, 0, sizeof(Oc_utl_htbl));
     if (NULL == slot_array_pi) {
-        htbl->arr = (Ss_slist_node**) pl_mm_malloc(size * sizeof(int*));
+        htbl->arr = (Ss_slist_node **)pl_mm_malloc(size * sizeof(int *));
         if (htbl->arr) {
             htbl->arr_malloced_on_create = TRUE;
         }
-    }
-    else
-        htbl->arr = (Ss_slist_node**) slot_array_pi;
+    } else
+        htbl->arr = (Ss_slist_node **)slot_array_pi;
 
-    memset(htbl->arr, 0, size * sizeof(int*));
-    htbl->len=size;
+    memset(htbl->arr, 0, size * sizeof(int *));
+    htbl->len = size;
     htbl->size = 0;
     htbl->hash = hash;
     htbl->compare = compare;
@@ -73,11 +71,10 @@ void oc_utl_htbl_create(
 // abruptly free up memory of htbl
 // for a clean release, user may want to use oc_utl_htbl_iter_discard
 // before calling this api.
-void oc_utl_htbl_free(Oc_utl_htbl *htbl)
-{
+void oc_utl_htbl_free(Oc_utl_htbl *htbl) {
     memset(htbl->arr, 0, htbl->len * sizeof(int));
     if (htbl->arr_malloced_on_create) {
-        pl_mm_free((char*)htbl->arr);
+        pl_mm_free((char *)htbl->arr);
     }
     memset(htbl, 0, sizeof(Oc_utl_htbl));
 }
@@ -86,17 +83,16 @@ void oc_utl_htbl_free(Oc_utl_htbl *htbl)
  * @h - hash table
  * @o - object name to look for
  */
-int oc_utl_htbl_exists(Oc_utl_htbl *h_i, void *key_i)
-{
+int oc_utl_htbl_exists(Oc_utl_htbl *h_i, void *key_i) {
     uint32 slot;
     Ss_slist_node *tmp;
-    
+
     slot = h_i->hash(key_i, h_i->len, 0);
     oc_utl_debugassert(slot < h_i->len && 0 <= slot);
     tmp = h_i->arr[slot];
-    
+
     while (tmp != NULL) {
-        if (h_i->compare((void*)tmp, key_i) == TRUE)
+        if (h_i->compare((void *)tmp, key_i) == TRUE)
             return TRUE;
         tmp = tmp->next;
     }
@@ -105,16 +101,15 @@ int oc_utl_htbl_exists(Oc_utl_htbl *h_i, void *key_i)
 
 /** lookup in the table.
  */
-void* oc_utl_htbl_lookup(Oc_utl_htbl *h_i, void *key_i)
-{
+void *oc_utl_htbl_lookup(Oc_utl_htbl *h_i, void *key_i) {
     uint32 slot;
     Ss_slist_node *tmp;
-//    int j = 0;
-    
-    slot = h_i->hash(key_i,h_i->len, 0);
+    //    int j = 0;
+
+    slot = h_i->hash(key_i, h_i->len, 0);
     oc_utl_debugassert(slot < h_i->len && 0 <= slot);
     tmp = h_i->arr[slot];
-    
+
     while (tmp) {
         if (h_i->compare(tmp, key_i) == TRUE)
             return tmp;
@@ -122,25 +117,25 @@ void* oc_utl_htbl_lookup(Oc_utl_htbl *h_i, void *key_i)
         // j++;
     }
 
-/*    if (j>5)
+    /*    if (j>5)
         WRN(("more than 5 elements in the same bucket! (htbl=%p slot=%lu #elem=%d)",
         h_i, slot, j));*/
-    
+
     return NULL;
 }
 
 /* lookup in the table, and extract the item if it exists
  */
-void* oc_utl_htbl_extract(Oc_utl_htbl *h_i, void *key_i)
-{
+void *oc_utl_htbl_extract(Oc_utl_htbl *h_i, void *key_i) {
     uint32 slot;
     Ss_slist_node *tmp, *rc;
-    
-    slot = h_i->hash(key_i,h_i->len, 0);
+
+    slot = h_i->hash(key_i, h_i->len, 0);
     oc_utl_debugassert(slot < h_i->len && 0 <= slot);
     tmp = h_i->arr[slot];
 
-    if (tmp == NULL) return NULL;
+    if (tmp == NULL)
+        return NULL;
 
     if (h_i->compare(tmp, key_i) == TRUE) {
         rc = tmp;
@@ -150,7 +145,8 @@ void* oc_utl_htbl_extract(Oc_utl_htbl *h_i, void *key_i)
     }
 
     while (tmp) {
-        if (tmp->next == NULL) return NULL;
+        if (tmp->next == NULL)
+            return NULL;
         if (h_i->compare(tmp->next, key_i) == TRUE) {
             rc = tmp->next;
             tmp->next = tmp->next->next;
@@ -160,7 +156,7 @@ void* oc_utl_htbl_extract(Oc_utl_htbl *h_i, void *key_i)
         tmp = tmp->next;
     }
 
-    return NULL;    
+    return NULL;
 }
 
 /*
@@ -170,17 +166,16 @@ void* oc_utl_htbl_extract(Oc_utl_htbl *h_i, void *key_i)
  * TRUE;
  *
  */
-void oc_utl_htbl_insert(Oc_utl_htbl *h_i, void *key_i, void* _elem)
-{
+void oc_utl_htbl_insert(Oc_utl_htbl *h_i, void *key_i, void *_elem) {
     uint32 slot;
     Ss_slist_node *head = NULL;
-    Ss_slist_node *elem = (Ss_slist_node*) _elem;
+    Ss_slist_node *elem = (Ss_slist_node *)_elem;
 
 #if OC_DEBUG
     if (oc_utl_htbl_exists(h_i, key_i) == TRUE)
         ERR(("Trying to add an element to the hash-table twice"));
 #endif
-        
+
     h_i->size++;
     slot = h_i->hash(key_i, h_i->len, 0);
     oc_utl_assert(slot < h_i->len && 0 <= slot);
@@ -189,16 +184,16 @@ void oc_utl_htbl_insert(Oc_utl_htbl *h_i, void *key_i, void* _elem)
     h_i->arr[slot] = elem;
 }
 
-bool oc_utl_htbl_remove(Oc_utl_htbl *h_i, void *key_i)
-{
+bool oc_utl_htbl_remove(Oc_utl_htbl *h_i, void *key_i) {
     uint32 slot;
     Ss_slist_node *tmp = NULL;
-    
+
     slot = h_i->hash(key_i, h_i->len, 0);
     oc_utl_assert(slot < h_i->len && 0 <= slot);
     tmp = h_i->arr[slot];
 
-    if (tmp == NULL) return FALSE;
+    if (tmp == NULL)
+        return FALSE;
 
     if (h_i->compare(tmp, key_i) == TRUE) {
         h_i->arr[slot] = tmp->next;
@@ -207,7 +202,8 @@ bool oc_utl_htbl_remove(Oc_utl_htbl *h_i, void *key_i)
     }
 
     while (tmp) {
-        if (tmp->next == NULL) return FALSE;
+        if (tmp->next == NULL)
+            return FALSE;
         if (h_i->compare(tmp->next, key_i) == TRUE) {
             tmp->next = tmp->next->next;
             h_i->size--;
@@ -219,14 +215,16 @@ bool oc_utl_htbl_remove(Oc_utl_htbl *h_i, void *key_i)
     return FALSE;
 }
 
-
-void oc_utl_htbl_iter(Oc_utl_htbl *h_i, void (*fun)(void *elem, void *ctx), void *ctx)
-{
+void oc_utl_htbl_iter(
+    Oc_utl_htbl *h_i,
+    void (*fun)(void *elem, void *ctx),
+    void *ctx
+) {
     uint32 i;
     Ss_slist_node *elem;
-    
-    for (i=0; i<h_i->len; i++) {
-        elem = h_i->arr[i] ;
+
+    for (i = 0; i < h_i->len; i++) {
+        elem = h_i->arr[i];
         while (elem) {
             fun(elem, ctx);
             elem = elem->next;
@@ -236,54 +234,55 @@ void oc_utl_htbl_iter(Oc_utl_htbl *h_i, void (*fun)(void *elem, void *ctx), void
 
 /* Same as above, but throw out any items that [fun] returns TRUE for.
  */
-void oc_utl_htbl_iter_discard(Oc_utl_htbl *h_i,
-                          bool (*fun)(void *elem, void *data),
-                          void *additional_data )
-{
+void oc_utl_htbl_iter_discard(
+    Oc_utl_htbl *h_i,
+    bool (*fun)(void *elem, void *data),
+    void *additional_data
+) {
     uint32 i;
     Ss_slist_node *elem_p;
     Ss_slist_node *next_elem_p;
     int cont;
-        
-    for (i=0; i<h_i->len; i++) {
-        elem_p = h_i->arr[i] ;
-        if (NULL == elem_p) continue;
+
+    for (i = 0; i < h_i->len; i++) {
+        elem_p = h_i->arr[i];
+        if (NULL == elem_p)
+            continue;
 
         // If the first element(s) should be removed -- remove them
         cont = TRUE;
-        while ( cont
-                && elem_p ) {
+        while (cont && elem_p) {
             cont = FALSE;
 
             next_elem_p = elem_p->next;
 
             switch (fun(elem_p, additional_data)) {
-            case FALSE:
-                break;
-            case TRUE:
-                elem_p = next_elem_p;
-                h_i->arr[i] = elem_p;
-                h_i->size--;
-                cont = TRUE;
-                break;
+                case FALSE:
+                    break;
+                case TRUE:
+                    elem_p = next_elem_p;
+                    h_i->arr[i] = elem_p;
+                    h_i->size--;
+                    cont = TRUE;
+                    break;
             }
         }
 
         // No point to continue if there is nothing left in the list
-        if ( NULL == elem_p
-          || NULL == elem_p->next ) continue;
-            
+        if (NULL == elem_p || NULL == elem_p->next)
+            continue;
+
         // We know that [elem_p] exists
         while (elem_p->next) {
             next_elem_p = elem_p->next->next;
-            switch (fun(elem_p->next, additional_data)){
-            case FALSE:
-                elem_p = elem_p->next;
-                break;
-            case TRUE:
-                elem_p->next = next_elem_p;
-                h_i->size--;
-                break;
+            switch (fun(elem_p->next, additional_data)) {
+                case FALSE:
+                    elem_p = elem_p->next;
+                    break;
+                case TRUE:
+                    elem_p->next = next_elem_p;
+                    h_i->size--;
+                    break;
             }
         }
     }
@@ -293,57 +292,58 @@ void oc_utl_htbl_iter_discard(Oc_utl_htbl *h_i,
 
 /* Same as above, but move any items that [fun] returns TRUE for into [list]
  */
-void oc_utl_htbl_iter_mv_to_list(Oc_utl_htbl *h_i,
-                             bool (*fun)(void *elem, void *data),
-                             void *additional_data,
-                             Ss_slist *list_pi)
-{
+void oc_utl_htbl_iter_mv_to_list(
+    Oc_utl_htbl *h_i,
+    bool (*fun)(void *elem, void *data),
+    void *additional_data,
+    Ss_slist *list_pi
+) {
     uint32 i;
     Ss_slist_node *elem_p, *rmv_p;
     int cont;
 
-    for (i=0; i < h_i->len; i++) {
-        elem_p = h_i->arr[i] ;
-        if (NULL == elem_p) continue;
+    for (i = 0; i < h_i->len; i++) {
+        elem_p = h_i->arr[i];
+        if (NULL == elem_p)
+            continue;
 
         // If the first element(s) should be removed -- remove them
         cont = TRUE;
-        while ( cont
-                && elem_p != NULL) {
+        while (cont && elem_p != NULL) {
             cont = FALSE;
 
             switch (fun(elem_p, additional_data)) {
-            case FALSE:
-                break;
-            case TRUE:
-                rmv_p = elem_p;
-                elem_p = elem_p->next;
-                h_i->arr[i] = elem_p;
-                h_i->size--;
-                cont = TRUE;
-                rmv_p->next = NULL;
-                ssslist_add_tail(list_pi, rmv_p );
-                break;
+                case FALSE:
+                    break;
+                case TRUE:
+                    rmv_p = elem_p;
+                    elem_p = elem_p->next;
+                    h_i->arr[i] = elem_p;
+                    h_i->size--;
+                    cont = TRUE;
+                    rmv_p->next = NULL;
+                    ssslist_add_tail(list_pi, rmv_p);
+                    break;
             }
         }
 
         // No point to continue if there is nothing left in the list
-        if ( NULL == elem_p
-             || NULL == elem_p->next ) continue;
-            
+        if (NULL == elem_p || NULL == elem_p->next)
+            continue;
+
         // We know that [elem_p] exists
         while (elem_p->next) {
-            switch (fun(elem_p->next, additional_data)){
-            case FALSE:
-                elem_p = elem_p->next;
-                break;
-            case TRUE:
-                rmv_p = elem_p->next;
-                elem_p->next = elem_p->next->next;
-                h_i->size--;
-                rmv_p->next = NULL;
-                ssslist_add_tail(list_pi, rmv_p );
-                break;
+            switch (fun(elem_p->next, additional_data)) {
+                case FALSE:
+                    elem_p = elem_p->next;
+                    break;
+                case TRUE:
+                    rmv_p = elem_p->next;
+                    elem_p->next = elem_p->next->next;
+                    h_i->size--;
+                    rmv_p->next = NULL;
+                    ssslist_add_tail(list_pi, rmv_p);
+                    break;
             }
         }
     }

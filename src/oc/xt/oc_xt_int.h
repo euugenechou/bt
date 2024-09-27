@@ -41,7 +41,6 @@
 //#include "pl_base.h"
 #include "oc_xt_s.h"
 
-
 struct Oc_rm_resource;
 struct Oc_wu;
 struct Oc_utl_file;
@@ -52,13 +51,13 @@ struct Oc_bpt_data;
  */
 
 // the maximal depth of a b-tree. This limited is currently needed in the
-// remove-range operation 
+// remove-range operation
 #define OC_XT_MAX_HEIGHT (6)
 
 // A key
 struct Oc_xt_key;
 
-// A record bound to a key. The record includes data and length. 
+// A record bound to a key. The record includes data and length.
 struct Oc_xt_rcrd;
 
 // A node in a b-tree
@@ -81,11 +80,11 @@ typedef enum Oc_xt_cmp {
     OC_XT_CMP_SML,
 
     // A is strictly larger than B. For example A=[10-13]  B=[8-9].
-    OC_XT_CMP_GRT,   
+    OC_XT_CMP_GRT,
 
     // A and B cover exactly the same extent. For example A=[10-13] B=[10-13].
     OC_XT_CMP_EQUAL,
-    
+
     // A is (strictly) covered by B. For example A=[10-13]  B=[9-15].
     OC_XT_CMP_COVERED,
 
@@ -95,26 +94,26 @@ typedef enum Oc_xt_cmp {
     // A and B (strictly) partially overlap. A is less than B,
     // For example A=[10-13] B=[12-20].
     OC_XT_CMP_PART_OVERLAP_SML,
-    
+
     // A and B (strictly) partially overlap. A is greater than B,
     // For example A=[10-13] B=[5-10].
-    OC_XT_CMP_PART_OVERLAP_GRT, 
-    
+    OC_XT_CMP_PART_OVERLAP_GRT,
+
 } Oc_xt_cmp;
 
 // A set of function pointers and data to initialize an x-tree
 typedef struct Oc_xt_cfg {
     bool initialized;
-    
+
     // size of a key (in bytes)
-    int key_size;                    
-    
+    int key_size;
+
     // size of a record (in bytes)
-    int rcrd_size;                   
-    
+    int rcrd_size;
+
     // size of a node (in bytes)
-    int node_size;                   
-    
+    int node_size;
+
     // A way to limit the fanout of a tree nodes. Use 0 for maximum
     int root_fanout;
     int non_root_fanout;
@@ -130,48 +129,47 @@ typedef struct Oc_xt_cfg {
     // the minimal number of entries in any node (root/leaf/index)
     int min_num_ent;
     //--------------------------------------------------------
-    
+
     // working with nodes
-    Oc_xt_node*  ((*node_alloc)(struct Oc_wu*));             
-    Oc_xt_node*  ((*node_alloc_at)(struct Oc_wu*, uint64));             
-    void         ((*node_dealloc)(struct Oc_wu*, uint64));
-    Oc_xt_node*  ((*node_get)(struct Oc_wu*, uint64));
-    void         ((*node_release)(struct Oc_wu*, Oc_xt_node*));   
-    void         ((*node_mark_dirty)(struct Oc_wu*, Oc_xt_node*));
-    
+    Oc_xt_node *((*node_alloc)(struct Oc_wu *));
+    Oc_xt_node *((*node_alloc_at)(struct Oc_wu *, uint64));
+    void((*node_dealloc)(struct Oc_wu *, uint64));
+    Oc_xt_node *((*node_get)(struct Oc_wu *, uint64));
+    void((*node_release)(struct Oc_wu *, Oc_xt_node *));
+    void((*node_mark_dirty)(struct Oc_wu *, Oc_xt_node *));
+
     /* compare keys [key1] and [key2].
      *  return 0 if keys are equal
      *        -1 if key1 > key2
      *         1 if key1 < key2
      */
-    int          ((*key_compare)(struct Oc_xt_key *key1_p,
-                                 struct Oc_xt_key *key2_p));
+    int((*key_compare)(struct Oc_xt_key *key1_p, struct Oc_xt_key *key2_p));
 
     // increment [key_p]. put the result in [result_p]
-    void         ((*key_inc)(struct Oc_xt_key *key_p,
-                             struct Oc_xt_key *result_p));
-    
+    void((*key_inc)(struct Oc_xt_key *key_p, struct Oc_xt_key *result_p));
+
     // string representation of a key
-    void         ((*key_to_string)(struct Oc_xt_key *key_p,
-                                   char *str_p,
-                                   int max_len));
-    
-    // compare two extents 
-    Oc_xt_cmp    ((*rcrd_compare)(struct Oc_xt_key *key1_p,
-                                  struct Oc_xt_rcrd *rcrd1_p,
-                                  struct Oc_xt_key *key2_p,
-                                  struct Oc_xt_rcrd *rcrd2_p));
-    
+    void((*key_to_string)(struct Oc_xt_key *key_p, char *str_p, int max_len));
+
+    // compare two extents
+    Oc_xt_cmp((*rcrd_compare)(
+        struct Oc_xt_key *key1_p,
+        struct Oc_xt_rcrd *rcrd1_p,
+        struct Oc_xt_key *key2_p,
+        struct Oc_xt_rcrd *rcrd2_p
+    ));
+
     /* compare a key to an extent.
      *  return 0 if key1 is inside the extent
      *        -1 if key1 > key2,rcrd2
      *         1 if key1 < key2
      */
-    int          ((*rcrd_compare0)(struct Oc_xt_key *key1_p,
-                                   struct Oc_xt_key *key2_p,
-                                   struct Oc_xt_rcrd *rcrd2_p));
-    
-    
+    int((*rcrd_compare0)(
+        struct Oc_xt_key *key1_p,
+        struct Oc_xt_key *key2_p,
+        struct Oc_xt_rcrd *rcrd2_p
+    ));
+
     /* Compare an extent against an upper and lower boundary.
      * The return value is of type Oc_xt_cmp. In the comparison
      * the boundary is considered extent B. 
@@ -199,87 +197,99 @@ typedef struct Oc_xt_cfg {
      *   result:
      *           [10-10] [11-14] NULL
      */
-    Oc_xt_cmp      ((*rcrd_bound_split)(
-                      // record+key to chop
-                      struct Oc_xt_key *key_p,
-                      struct Oc_xt_rcrd *rcrd_p,
-                      
-                      // boundary keys
-                      struct Oc_xt_key *min_key_p,
-                      struct Oc_xt_key *max_key_p,
-                      
-                      // resulting sub-extents
-                      struct Oc_xt_key *key_array_p[3],
-                      struct Oc_xt_rcrd *rcrd_array_p[3] ));
+    Oc_xt_cmp((*rcrd_bound_split)(
+        // record+key to chop
+        struct Oc_xt_key *key_p,
+        struct Oc_xt_rcrd *rcrd_p,
+
+        // boundary keys
+        struct Oc_xt_key *min_key_p,
+        struct Oc_xt_key *max_key_p,
+
+        // resulting sub-extents
+        struct Oc_xt_key *key_array_p[3],
+        struct Oc_xt_rcrd *rcrd_array_p[3]
+    ));
 
     /* same function but with a second extent to compare against instead
      * of boundary keys.
      */
-    Oc_xt_cmp      ((*rcrd_split)(
-                      // record+key to chop
-                      struct Oc_xt_key *key1_p,
-                      struct Oc_xt_rcrd *rcrd1_p,
-                      
-                      // record to provide boundary keys
-                      struct Oc_xt_key *key2_p,
-                      struct Oc_xt_rcrd *rcrd2_p,
-                      
-                      // resulting sub-extents
-                      struct Oc_xt_key *key_array_p[3],
-                      struct Oc_xt_rcrd *rcrd_array_p[3] ));    
+    Oc_xt_cmp((*rcrd_split)(
+        // record+key to chop
+        struct Oc_xt_key *key1_p,
+        struct Oc_xt_rcrd *rcrd1_p,
+
+        // record to provide boundary keys
+        struct Oc_xt_key *key2_p,
+        struct Oc_xt_rcrd *rcrd2_p,
+
+        // resulting sub-extents
+        struct Oc_xt_key *key_array_p[3],
+        struct Oc_xt_rcrd *rcrd_array_p[3]
+    ));
 
     /* return the end offset of an extent. The end offset is part
      * of the extent. For example, if E=[10-13] then 13 is the end-offset
      * and it is still -in- E.
      */
-    void           ((*rcrd_end_offset)(struct Oc_xt_key *key_p,
-                                       struct Oc_xt_rcrd *rcrd_p,
-                                       
-                                       // returned key 
-                                       struct Oc_xt_key *end_key_po));
-    
+    void((*rcrd_end_offset)(
+        struct Oc_xt_key *key_p,
+        struct Oc_xt_rcrd *rcrd_p,
+
+        // returned key
+        struct Oc_xt_key *end_key_po
+    ));
+
     // Chop the first [len] unit from the the record
-    void           ((*rcrd_chop_length)(struct Oc_xt_key *key_po,
-                                        struct Oc_xt_rcrd *rcrd_po,
-                                        uint64 len));
+    void((*rcrd_chop_length)(
+        struct Oc_xt_key *key_po,
+        struct Oc_xt_rcrd *rcrd_po,
+        uint64 len
+    ));
 
     /* Chop extent [key_po, rcrd_po] from above. Limit it
      * from above to [hi_key_p].
      */
-    void           ((*rcrd_chop_top)(struct Oc_xt_key *key_po,
-                                     struct Oc_xt_rcrd *rcrd_po,
-                                     struct Oc_xt_key *hi_key_p));
-    
+    void((*rcrd_chop_top)(
+        struct Oc_xt_key *key_po,
+        struct Oc_xt_rcrd *rcrd_po,
+        struct Oc_xt_key *hi_key_p
+    ));
+
     /* Split extent [key_p, rcrd_p] into [num] sub-extents. Write the
      * new extents into [key_array] and [rcrd_array].
      */
-    void           ((*rcrd_split_into_sub)(struct Oc_xt_key *key_p,
-                                           struct Oc_xt_rcrd *rcrd_p,
-                                           int num,
-                                           struct Oc_xt_key *key_array,
-                                           struct Oc_xt_rcrd *rcrd_array ));
-    
+    void((*rcrd_split_into_sub)(
+        struct Oc_xt_key *key_p,
+        struct Oc_xt_rcrd *rcrd_p,
+        int num,
+        struct Oc_xt_key *key_array,
+        struct Oc_xt_rcrd *rcrd_array
+    ));
+
     // Return the length of the extent
-    uint64         ((*rcrd_length)(struct Oc_xt_key *key_p,
-                                   struct Oc_xt_rcrd *rcrd_p));
-    
+    uint64((*rcrd_length)(struct Oc_xt_key *key_p, struct Oc_xt_rcrd *rcrd_p));
+
     // release record. This is useful if the record represents an extent on disk
-    void           ((*rcrd_release)(struct Oc_wu*,
-                                    struct Oc_xt_key *key_p,
-                                    struct Oc_xt_rcrd *rcrd_p));
-    
+    void((*rcrd_release)(
+        struct Oc_wu *,
+        struct Oc_xt_key *key_p,
+        struct Oc_xt_rcrd *rcrd_p
+    ));
+
     // string representation of an extent
-    void           ((*rcrd_to_string)(struct Oc_xt_key *key_p,
-                                      struct Oc_xt_rcrd *rcrd_p,
-                                      char *str_p,
-                                      int max_len));
-    
+    void((*rcrd_to_string)(
+        struct Oc_xt_key *key_p,
+        struct Oc_xt_rcrd *rcrd_p,
+        char *str_p,
+        int max_len
+    ));
+
     //--------------------------------------------------------
     // query function for FS
-    void           ((*fs_query_alloc)(struct Oc_rm_resource *r_p, int n_pages));
-    void           ((*fs_query_dealloc)(struct Oc_rm_resource *r_p, int n_pages));
+    void((*fs_query_alloc)(struct Oc_rm_resource *r_p, int n_pages));
+    void((*fs_query_dealloc)(struct Oc_rm_resource *r_p, int n_pages));
 } Oc_xt_cfg;
-
 
 /******************************************************************/
 
@@ -291,10 +301,11 @@ void oc_xt_init_config(Oc_xt_cfg *cfg_p);
 /* state operations
  */
 void oc_xt_init_state_b(
-    struct Oc_wu *wu_pi, Oc_xt_state *state_po, Oc_xt_cfg *cfg_p);
-void oc_xt_destroy_state(
-    struct Oc_wu *wu_pi, Oc_xt_state *state_pi);
-
+    struct Oc_wu *wu_pi,
+    Oc_xt_state *state_po,
+    Oc_xt_cfg *cfg_p
+);
+void oc_xt_destroy_state(struct Oc_wu *wu_pi, Oc_xt_state *state_pi);
 
 /* basic operations
  */
@@ -302,28 +313,25 @@ void oc_xt_destroy_state(
 /* create an x-tree (anywhere on disk). Return the address on disk where the root
  * is (initially) located.
  */
-uint64 oc_xt_create_b(
-    struct Oc_wu *wu_p,
-    struct Oc_xt_state *s_p);
+uint64 oc_xt_create_b(struct Oc_wu *wu_p, struct Oc_xt_state *s_p);
 
 /* delete the whole x-tree. deallocate all nodes and records.
  * The whole tree is locked during this operation.
  */
-void oc_xt_delete_b(
-    struct Oc_wu *wu_p,
-    struct Oc_xt_state *s_p);
+void oc_xt_delete_b(struct Oc_wu *wu_p, struct Oc_xt_state *s_p);
 
 /* If needed, COWs the root of an Xtree (while write-locking the root)
  * and updates the data entry pointing to this root from a different tree
  * which is a BPT tree;
  * We assume the node of the father tree holding this data is protected
  * under a write-lock 
- */ 
-void oc_xt_cow_root_and_update_b(struct Oc_wu *wu_p,
-                                 struct Oc_xt_state *s_p,
-                                 struct Oc_bpt_data *father_data_p,
-                                 int size);
-
+ */
+void oc_xt_cow_root_and_update_b(
+    struct Oc_wu *wu_p,
+    struct Oc_xt_state *s_p,
+    struct Oc_bpt_data *father_data_p,
+    int size
+);
 
 /* debugging support
  */
@@ -337,20 +345,17 @@ void oc_xt_dbg_output_b(
     struct Oc_wu *wu_p,
     struct Oc_xt_state *s_p,
     struct Oc_utl_file *file_out_p,
-    char *tag_p);
+    char *tag_p
+);
 
 /* Validate that the tree is valid.
  * The whole tree is locked during this operation.
  */
-bool oc_xt_dbg_validate_b(
-    struct Oc_wu *wu_p,
-    Oc_xt_state *s_p);
+bool oc_xt_dbg_validate_b(struct Oc_wu *wu_p, Oc_xt_state *s_p);
 
 /* Computes statistics on the tree
  */
-void oc_xt_statistics_b(
-    struct Oc_wu *wu_p,
-    Oc_xt_state *s_p);
+void oc_xt_statistics_b(struct Oc_wu *wu_p, Oc_xt_state *s_p);
 
 /* Lookup in a range, return the set of extents inside the range.
  * Return also extents that have a partial overlap with the
@@ -371,7 +376,8 @@ void oc_xt_lookup_range_b(
     int max_num_keys_i,
     struct Oc_xt_key *key_array_po,
     struct Oc_xt_rcrd *rcrd_array_po,
-    int *n_found_po);
+    int *n_found_po
+);
 
 /* insert an extent into the tree. return the length
  * of overwrite. For example, if the inserted extent ovelaps an
@@ -383,7 +389,8 @@ uint64 oc_xt_insert_range_b(
     struct Oc_wu *wu_p,
     struct Oc_xt_state *s_p,
     struct Oc_xt_key *key_p,
-    struct Oc_xt_rcrd *rcrd_p);
+    struct Oc_xt_rcrd *rcrd_p
+);
 
 /* Remove a range from the tree.
  * The whole tree is locked during this operation.
@@ -393,15 +400,18 @@ uint64 oc_xt_remove_range_b(
     struct Oc_wu *wu_p,
     Oc_xt_state *s_p,
     struct Oc_xt_key *min_key_p,
-    struct Oc_xt_key *max_key_p);
+    struct Oc_xt_key *max_key_p
+);
 
 /* swap references to the b-tree root between two work-units.
  * Used in order to work correctly with the strict accounting for
  * pages performed by the PM. 
  */
-void oc_xt_swap_root_ref(Oc_xt_state *s_p,
-                         struct Oc_wu *trg_wu_p,
-                         struct Oc_wu *src_wu_p);
+void oc_xt_swap_root_ref(
+    Oc_xt_state *s_p,
+    struct Oc_wu *trg_wu_p,
+    struct Oc_wu *src_wu_p
+);
 
 // A string representation of the comparison return code
 const char *oc_xt_string_of_cmp_rc(Oc_xt_cmp rc);
@@ -413,15 +423,15 @@ const char *oc_xt_string_of_cmp_rc(Oc_xt_cmp rc);
  * b-tree
  */
 typedef enum Oc_xt_fid {
-    OC_XT_FN_CREATE,                
-    OC_XT_FN_CREATE_AT,             
-    OC_XT_FN_DELETE,                
-    OC_XT_FN_DBG_OUTPUT,            
-    OC_XT_FN_DBG_VALIDATE,          
-    OC_XT_FN_LOOKUP_RANGE,          
-    OC_XT_FN_INSERT_RANGE,          
-    OC_XT_FN_REMOVE_RANGE,          
-    OC_XT_FN_GET_ATTR, 
+    OC_XT_FN_CREATE,
+    OC_XT_FN_CREATE_AT,
+    OC_XT_FN_DELETE,
+    OC_XT_FN_DBG_OUTPUT,
+    OC_XT_FN_DBG_VALIDATE,
+    OC_XT_FN_LOOKUP_RANGE,
+    OC_XT_FN_INSERT_RANGE,
+    OC_XT_FN_REMOVE_RANGE,
+    OC_XT_FN_GET_ATTR,
     OC_XT_FN_SET_ATTR,
 } Oc_xt_fid;
 
@@ -436,9 +446,9 @@ void oc_xt_query_b(
     struct Oc_xt_cfg *cfg_p,
     struct Oc_rm_resource *rm_p,
     Oc_xt_fid fid_i,
-    void *param);    
+    void *param
+);
 
 /******************************************************************/
 
 #endif
-

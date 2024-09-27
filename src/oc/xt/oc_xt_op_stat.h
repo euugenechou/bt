@@ -40,18 +40,18 @@
 
 typedef struct Oc_xt_statistics {
     // Total number of keys, nodes
-    uint32 num_extents; // extents stored in the leaves
-    uint32 num_nodes; // root, index and leaves
-    uint32 num_leaves; // leaves only
-    uint32 num_indexnodes; //index only
-    uint32 num_pointers; // total number of pointers in the tree
+    uint32 num_extents;  // extents stored in the leaves
+    uint32 num_nodes;  // root, index and leaves
+    uint32 num_leaves;  // leaves only
+    uint32 num_indexnodes;  //index only
+    uint32 num_pointers;  // total number of pointers in the tree
 
     // Tree Depth
-    uint32 depth; // global tree depth
-    uint32 tmp_depth; // temporary variable to store the local depth 
+    uint32 depth;  // global tree depth
+    uint32 tmp_depth;  // temporary variable to store the local depth
 
     uint32 root_fanout;
-    
+
     // Internal node fanout;
     double avg_fanout;
     uint32 max_fanout;
@@ -61,16 +61,14 @@ typedef struct Oc_xt_statistics {
     double avg_leafcap;
     uint32 max_leafcap;
     uint32 min_leafcap;
-    
+
 } Oc_xt_statistics;
 
 // Traverses the tree and collects its statistics
 void oc_xt_op_statistics_b(
     struct Oc_wu *wu_p,
     Oc_xt_state *s_p,
-    Oc_xt_statistics *st_p);
+    Oc_xt_statistics *st_p
+);
 
 #endif
-
-
-

@@ -59,46 +59,52 @@
 #include "oc_bpt_nd.h"
 #include "oc_bpt_op_lookup_range.h"
 /**********************************************************************/
-static bool check_in_bounds(Oc_bpt_state *s_p,
-                            Oc_bpt_node *node_p,
-                            struct Oc_bpt_key *key_p);
+static bool check_in_bounds(
+    Oc_bpt_state *s_p,
+    Oc_bpt_node *node_p,
+    struct Oc_bpt_key *key_p
+);
 
 static bool search_in_leaf(
     struct Oc_wu *wu_p,
     Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
-    Oc_bpt_op_lookup_range *lkr_p );        
+    Oc_bpt_op_lookup_range *lkr_p
+);
 static bool simple_descent_b(
     struct Oc_wu *wu_p,
     Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
-    Oc_bpt_op_lookup_range *lkr_p );    
+    Oc_bpt_op_lookup_range *lkr_p
+);
 static bool mini_lookup_b(
     struct Oc_wu *wu_p,
     Oc_bpt_state *s_p,
-    Oc_bpt_op_lookup_range *lkr_p );
+    Oc_bpt_op_lookup_range *lkr_p
+);
 
 /**********************************************************************/
 /* Check that in [node_p] there are keys greater or equal to [key_p].
- */ 
-static bool check_in_bounds(Oc_bpt_state *s_p,
-                            Oc_bpt_node *node_p,
-                            struct Oc_bpt_key *key_p)
-{
+ */
+static bool check_in_bounds(
+    Oc_bpt_state *s_p,
+    Oc_bpt_node *node_p,
+    struct Oc_bpt_key *key_p
+) {
     struct Oc_bpt_key *max_key_p;
-    
+
     max_key_p = oc_bpt_nd_max_key(s_p, node_p);
-    
+
     switch (s_p->cfg_p->key_compare(key_p, max_key_p)) {
-    case -1:
-        return FALSE;
-        break;
-    case 0:
-        break;
-    case 1:
-        break;                    
+        case -1:
+            return FALSE;
+            break;
+        case 0:
+            break;
+        case 1:
+            break;
     }
-    
+
     return TRUE;
 }
 
@@ -113,30 +119,38 @@ static bool check_in_bounds(Oc_bpt_state *s_p,
 static bool search_in_leaf(
     struct Oc_wu *wu_p,
     Oc_bpt_state *s_p,
-    Oc_bpt_node *node_p, 
-    Oc_bpt_op_lookup_range *lkr_p )    
-{
-    int loc_lo, loc_hi, i, cursor_keys, cursor_data;    
-   
+    Oc_bpt_node *node_p,
+    Oc_bpt_op_lookup_range *lkr_p
+) {
+    int loc_lo, loc_hi, i, cursor_keys, cursor_data;
+
     oc_utl_debugassert(oc_bpt_nd_is_leaf(s_p, node_p));
     oc_utl_debugassert(*(lkr_p->nkeys_found_po) < lkr_p->max_num_keys_i);
 
     oc_bpt_trace_wu_lvl(
-        3, OC_EV_BPT_LOOKUP_RNG, wu_p, "search_in_leaf: [%s]",
-        oc_bpt_nd_string_of_2key(s_p, lkr_p->min_key_p, lkr_p->max_key_p));
+        3,
+        OC_EV_BPT_LOOKUP_RNG,
+        wu_p,
+        "search_in_leaf: [%s]",
+        oc_bpt_nd_string_of_2key(s_p, lkr_p->min_key_p, lkr_p->max_key_p)
+    );
     oc_bpt_trace_wu_lvl(
-        3, OC_EV_BPT_LOOKUP_RNG, wu_p, "leaf=[%s]",
-        oc_bpt_nd_string_of_node(s_p, node_p));
-    
+        3,
+        OC_EV_BPT_LOOKUP_RNG,
+        wu_p,
+        "leaf=[%s]",
+        oc_bpt_nd_string_of_node(s_p, node_p)
+    );
+
     // find the first key that is greater or equal than [min_key_p]
     loc_lo = oc_bpt_nd_lookup_ge_key(wu_p, s_p, node_p, lkr_p->min_key_p);
-    if (-1 == loc_lo) 
+    if (-1 == loc_lo)
         // nothing matching
         return FALSE;
 
     // find the first key that is smaller or equal than [max_key_p]
     loc_hi = oc_bpt_nd_lookup_le_key(wu_p, s_p, node_p, lkr_p->max_key_p);
-    if (-1 == loc_hi) 
+    if (-1 == loc_hi)
         // nothing matching
         return FALSE;
 
@@ -148,34 +162,44 @@ static bool search_in_leaf(
     oc_utl_debugassert(0 <= loc_lo);
     oc_utl_debugassert(loc_hi < oc_bpt_nd_num_entries(s_p, node_p));
 
-    oc_bpt_trace_wu_lvl(3, OC_EV_BPT_LOOKUP_RNG, wu_p, "loc_lo=%d loc_hi=%d sum=%d",
-                        loc_lo, loc_hi, loc_hi-loc_lo+1);
+    oc_bpt_trace_wu_lvl(
+        3,
+        OC_EV_BPT_LOOKUP_RNG,
+        wu_p,
+        "loc_lo=%d loc_hi=%d sum=%d",
+        loc_lo,
+        loc_hi,
+        loc_hi - loc_lo + 1
+    );
 
     // Copy all entries between [loc_lo] and [loc_hi]
     cursor_keys = *(lkr_p->nkeys_found_po) * s_p->cfg_p->key_size;
     cursor_data = *(lkr_p->nkeys_found_po) * s_p->cfg_p->data_size;
-    for (i=loc_lo;
-         i<=loc_hi && *(lkr_p->nkeys_found_po) < lkr_p->max_num_keys_i;
-         i++)
-    {
+    for (i = loc_lo;
+         i <= loc_hi && *(lkr_p->nkeys_found_po) < lkr_p->max_num_keys_i;
+         i++) {
         struct Oc_bpt_key *key_p;
         struct Oc_bpt_data *data_p;
 
         // get the next entry in the page
         oc_bpt_nd_leaf_get_kth(s_p, node_p, i, &key_p, &data_p);
 
-        memcpy((char*)lkr_p->key_array_po + cursor_keys, 
-               (char*)key_p,
-               s_p->cfg_p->key_size);
+        memcpy(
+            (char *)lkr_p->key_array_po + cursor_keys,
+            (char *)key_p,
+            s_p->cfg_p->key_size
+        );
         if (lkr_p->data_array_po != NULL)
-            memcpy((char*)lkr_p->data_array_po + cursor_data, 
-                   (char*)data_p,
-                   s_p->cfg_p->data_size);
+            memcpy(
+                (char *)lkr_p->data_array_po + cursor_data,
+                (char *)data_p,
+                s_p->cfg_p->data_size
+            );
         (*(lkr_p->nkeys_found_po))++;
         cursor_keys += s_p->cfg_p->key_size;
         cursor_data += s_p->cfg_p->data_size;
     }
-    
+
     return TRUE;
 }
 
@@ -187,16 +211,20 @@ static bool simple_descent_b(
     struct Oc_wu *wu_p,
     Oc_bpt_state *s_p,
     Oc_bpt_node *node_p,
-    Oc_bpt_op_lookup_range *lkr_p )    
-{
+    Oc_bpt_op_lookup_range *lkr_p
+) {
     bool rc;
     Oc_bpt_node *child_p, *father_p;
     uint64 addr;
 
     oc_bpt_trace_wu_lvl(
-        3, OC_EV_BPT_LOOKUP_RNG, wu_p, "simple_descent: [%s]",
-        oc_bpt_nd_string_of_2key (s_p, lkr_p->min_key_p, lkr_p->max_key_p));
-    
+        3,
+        OC_EV_BPT_LOOKUP_RNG,
+        wu_p,
+        "simple_descent: [%s]",
+        oc_bpt_nd_string_of_2key(s_p, lkr_p->min_key_p, lkr_p->max_key_p)
+    );
+
     if (oc_bpt_nd_is_leaf(s_p, node_p)) {
         // [node_p] is a leaf
         rc = search_in_leaf(wu_p, s_p, node_p, lkr_p);
@@ -208,22 +236,27 @@ static bool simple_descent_b(
 
     // descend down the tree
     while (1) {
-        addr = oc_bpt_nd_index_lookup_key(wu_p, s_p, father_p, lkr_p->min_key_p,
-                                          NULL, NULL);
+        addr = oc_bpt_nd_index_lookup_key(
+            wu_p,
+            s_p,
+            father_p,
+            lkr_p->min_key_p,
+            NULL,
+            NULL
+        );
         if (0 == addr)
             addr = oc_bpt_nd_index_lookup_min_key(wu_p, s_p, father_p);
         child_p = oc_bpt_nd_get_for_read(wu_p, s_p, addr);
-        
+
         if (oc_bpt_nd_is_leaf(s_p, child_p)) {
             rc = search_in_leaf(wu_p, s_p, child_p, lkr_p);
             oc_bpt_nd_release(wu_p, s_p, child_p);
             oc_bpt_nd_release(wu_p, s_p, father_p);
             return rc;
-        }
-        else {
+        } else {
             // release the father
             oc_bpt_nd_release(wu_p, s_p, father_p);
-            
+
             // switch places between father and son.
             father_p = child_p;
         }
@@ -244,20 +277,23 @@ static bool simple_descent_b(
 static bool mini_lookup_b(
     struct Oc_wu *wu_p,
     Oc_bpt_state *s_p,
-    Oc_bpt_op_lookup_range *lkr_p )    
-{
+    Oc_bpt_op_lookup_range *lkr_p
+) {
     Oc_bpt_node *father_p, *child_p, *hi_p = NULL;
     bool rc;
-    
+
     oc_bpt_trace_wu_lvl(
-        3, OC_EV_BPT_LOOKUP_RNG, wu_p, "mini_lookup: [%s]",
-        oc_bpt_nd_string_of_2key (s_p, lkr_p->min_key_p, lkr_p->max_key_p));
+        3,
+        OC_EV_BPT_LOOKUP_RNG,
+        wu_p,
+        "mini_lookup: [%s]",
+        oc_bpt_nd_string_of_2key(s_p, lkr_p->min_key_p, lkr_p->max_key_p)
+    );
 
     oc_bpt_nd_get_for_read(wu_p, s_p, s_p->root_node_p->disk_addr);
 
     // 1. base case, this is the root node and the root is a leaf
-    if (oc_bpt_nd_is_leaf(s_p, s_p->root_node_p))
-    {
+    if (oc_bpt_nd_is_leaf(s_p, s_p->root_node_p)) {
         rc = search_in_leaf(wu_p, s_p, s_p->root_node_p, lkr_p);
         oc_bpt_nd_release(wu_p, s_p, s_p->root_node_p);
         return rc;
@@ -270,7 +306,7 @@ static bool mini_lookup_b(
         int loc_lo, loc_hi;
         uint64 addr;
         struct Oc_bpt_key *dummy_key_p;
-        
+
         oc_bpt_trace_wu_lvl(3, OC_EV_BPT_LOOKUP_RNG, wu_p, "mini_lookup: iter");
 
         // compute the upper and lower bounds
@@ -294,21 +330,25 @@ static bool mini_lookup_b(
                 oc_bpt_nd_release(wu_p, s_p, hi_p);
                 hi_p = NULL;
             }
-        
-        if (loc_hi != loc_lo &&
-            !check_in_bounds(s_p, child_p, lkr_p->min_key_p))
-        {
+
+        if (loc_hi != loc_lo
+            && !check_in_bounds(s_p, child_p, lkr_p->min_key_p)) {
             /* we are running the risk of missing some search hits.
              * Take a read-lock on the page with the high-bound.
              * Hold on to this page until further notice. 
              */
-            oc_bpt_trace_wu_lvl(3, OC_EV_BPT_LOOKUP_RNG, wu_p, "mini_lookup: split");
+            oc_bpt_trace_wu_lvl(
+                3,
+                OC_EV_BPT_LOOKUP_RNG,
+                wu_p,
+                "mini_lookup: split"
+            );
             if (hi_p)
                 oc_bpt_nd_release(wu_p, s_p, hi_p);
             oc_bpt_nd_index_get_kth(s_p, father_p, loc_hi, &dummy_key_p, &addr);
             hi_p = oc_bpt_nd_get_for_read(wu_p, s_p, addr);
         }
-        
+
         // continue descent with [child_p] only
 
         if (oc_bpt_nd_is_leaf(s_p, child_p)) {
@@ -321,7 +361,7 @@ static bool mini_lookup_b(
 
         // release the father
         oc_bpt_nd_release(wu_p, s_p, father_p);
-        
+
         // switch places between father and son.
         father_p = child_p;
     }
@@ -330,7 +370,7 @@ static bool mini_lookup_b(
         // We might have missed the search so we try the high bound as well.
         rc |= simple_descent_b(wu_p, s_p, hi_p, lkr_p);
     }
-    
+
     return rc;
 }
 
@@ -338,44 +378,41 @@ static bool mini_lookup_b(
 void oc_bpt_op_lookup_range_b(
     struct Oc_wu *wu_p,
     Oc_bpt_state *s_p,
-    Oc_bpt_op_lookup_range *lkr_p )
-{
+    Oc_bpt_op_lookup_range *lkr_p
+) {
     bool rc;
     struct Oc_bpt_key *cursor_p, *max_key_so_far_p;
     char *p;
 
     *(lkr_p->nkeys_found_po) = 0;
-    if (0 == lkr_p->max_num_keys_i ||
-        s_p->cfg_p->key_compare(lkr_p->min_key_p, lkr_p->max_key_p) == -1)
+    if (0 == lkr_p->max_num_keys_i
+        || s_p->cfg_p->key_compare(lkr_p->min_key_p, lkr_p->max_key_p) == -1)
         return;
-    
+
     if (oc_bpt_nd_num_entries(s_p, s_p->root_node_p) == 0) {
         return;
     }
-    
-    cursor_p = (struct Oc_bpt_key*)alloca(s_p->cfg_p->key_size);
-    memcpy((char*)cursor_p, (char*)lkr_p->min_key_p, s_p->cfg_p->key_size);
-    
-    while (*(lkr_p->nkeys_found_po) < lkr_p->max_num_keys_i)
-    {
+
+    cursor_p = (struct Oc_bpt_key *)alloca(s_p->cfg_p->key_size);
+    memcpy((char *)cursor_p, (char *)lkr_p->min_key_p, s_p->cfg_p->key_size);
+
+    while (*(lkr_p->nkeys_found_po) < lkr_p->max_num_keys_i) {
         rc = mini_lookup_b(wu_p, s_p, lkr_p);
-        
+
         if (!rc)
             // no more keys found in the range, we're done
             break;
-        
+
         /* Update the minimal key searched for.
          * After the first search we move the minimal-key
          * forward.
          */
         oc_utl_debugassert(*lkr_p->nkeys_found_po > 0);
-        p = (char*)lkr_p->key_array_po +
-            ((*lkr_p->nkeys_found_po -1) * s_p->cfg_p->key_size);
-        max_key_so_far_p = (struct Oc_bpt_key*)p;
-            
+        p = (char *)lkr_p->key_array_po
+            + ((*lkr_p->nkeys_found_po - 1) * s_p->cfg_p->key_size);
+        max_key_so_far_p = (struct Oc_bpt_key *)p;
+
         s_p->cfg_p->key_inc(max_key_so_far_p, cursor_p);
         lkr_p->min_key_p = cursor_p;
     }
 }
-
-

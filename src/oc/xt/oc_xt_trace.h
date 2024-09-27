@@ -37,16 +37,16 @@ struct Oc_wu;
 typedef enum Oc_xt_trace_event {
     OC_EV_XT_CREATE,
     OC_EV_XT_DELETE,
-    OC_EV_XT_COW_ROOT_AND_UPDATE,    
+    OC_EV_XT_COW_ROOT_AND_UPDATE,
     OC_EV_XT_LOOKUP_RANGE,
     OC_EV_XT_INSERT_RANGE,
     OC_EV_XT_REMOVE_RANGE,
     OC_EV_XT_ATTR_GET,
-    OC_EV_XT_ATTR_SET,       
+    OC_EV_XT_ATTR_SET,
     OC_EV_XT_QUERY,
     OC_EV_XT_INIT_CFG,
     OC_EV_XT_DESTROY_STATE,
-    
+
     OC_EV_XT_LEAF_SPLIT,
     OC_EV_XT_ROOT_SPLIT,
     OC_EV_XT_INDEX_SPLIT,
@@ -88,18 +88,21 @@ typedef enum Oc_xt_trace_event {
 } Oc_xt_trace_event;
 
 #if OSD_DEBUG
-void oc_xt_trace_wu_lvl(int level,
-                         Oc_xt_trace_event ev,
-                         struct Oc_wu *wu_pi,
-                         const char *fmt_p,
-                         ...);
+void oc_xt_trace_wu_lvl(
+    int level,
+    Oc_xt_trace_event ev,
+    struct Oc_wu *wu_pi,
+    const char *fmt_p,
+    ...
+);
 #else
-static inline void oc_xt_trace_wu_lvl(int level,
-                                       Oc_xt_trace_event ev,
-                                       struct Oc_wu *wu_pi,
-                                       const char *fmt_p,
-                                       ...)
-{}
+static inline void oc_xt_trace_wu_lvl(
+    int level,
+    Oc_xt_trace_event ev,
+    struct Oc_wu *wu_pi,
+    const char *fmt_p,
+    ...
+) {}
 #endif
 
 #endif

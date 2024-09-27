@@ -36,7 +36,7 @@
  */
 /**********************************************************************/
 #include <stdlib.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "pl_dstru.h"
@@ -52,9 +52,9 @@ static Oc_utl_htbl vd_htbl;
 static int g_refcnt = 0;
 
 typedef struct Oc_xt_test_node {
-    Ss_slist_node link;       // link inside the hash-table    
+    Ss_slist_node link;  // link inside the hash-table
     Oc_xt_node node;
-    int    magic;             // magic number, for testing purposes
+    int magic;  // magic number, for testing purposes
 } Oc_xt_test_node;
 
 // virtual-disk section
@@ -80,57 +80,49 @@ static uint32 random_choose(uint32 top);
  *   [Oc_xt_test_node]
  */
 
-static uint32 vd_hash(void *_key, int num_buckets, int dummy)
-{
-    uint64 disk_addr = *((uint64*) _key);
+static uint32 vd_hash(void *_key, int num_buckets, int dummy) {
+    uint64 disk_addr = *((uint64 *)_key);
 
-    return (disk_addr * 1069597 + 1066133) & (num_buckets-1);
+    return (disk_addr * 1069597 + 1066133) & (num_buckets - 1);
 }
 
-static bool vd_compare(void *_elem, void *_key)
-{
-    uint64 disk_addr = *((uint64*) _key);
-    Oc_xt_test_node *tnode_p = (Oc_xt_test_node *) _elem;
+static bool vd_compare(void *_elem, void *_key) {
+    uint64 disk_addr = *((uint64 *)_key);
+    Oc_xt_test_node *tnode_p = (Oc_xt_test_node *)_elem;
 
     return (tnode_p->node.disk_addr == disk_addr);
 }
 
 // create a hashtable
-static void vd_create(void)
-{
-    oc_utl_htbl_create(
-        &vd_htbl,
-        2048,
-        NULL,
-        vd_hash,
-        vd_compare);
+static void vd_create(void) {
+    oc_utl_htbl_create(&vd_htbl, 2048, NULL, vd_hash, vd_compare);
 }
 
 // remove a node
-static void vd_node_remove(uint64 addr)
-{
+static void vd_node_remove(uint64 addr) {
     bool rc;
 
-    rc = oc_utl_htbl_remove(&vd_htbl, (void*)&addr);
+    rc = oc_utl_htbl_remove(&vd_htbl, (void *)&addr);
     oc_utl_assert(rc);
 }
 
 // insert a node
-static void vd_node_insert(Oc_xt_test_node *tnode_p)
-{
-    oc_utl_htbl_insert(&vd_htbl, (void*)&tnode_p->node.disk_addr, (void*)tnode_p);
+static void vd_node_insert(Oc_xt_test_node *tnode_p) {
+    oc_utl_htbl_insert(
+        &vd_htbl,
+        (void *)&tnode_p->node.disk_addr,
+        (void *)tnode_p
+    );
 }
 
-static Oc_xt_test_node *vd_node_lookup(uint64 addr)
-{
-    return (Oc_xt_test_node*)oc_utl_htbl_lookup(&vd_htbl, (void*)&addr);
+static Oc_xt_test_node *vd_node_lookup(uint64 addr) {
+    return (Oc_xt_test_node *)oc_utl_htbl_lookup(&vd_htbl, (void *)&addr);
 }
 
 /**********************************************************************/
 
 // A trivial emulation of free-space. Always allocate the next page.
-static uint64 fs_alloc(void)
-{
+static uint64 fs_alloc(void) {
     static uint64 fs = 1;
 
     return fs++;
@@ -138,58 +130,53 @@ static uint64 fs_alloc(void)
 
 /**********************************************************************/
 // create a random number between 0 and [top]
-static uint32 random_choose(uint32 top)
-{
-    if (0 == top) return 0;
-    return (uint32) (rand() % top);
+static uint32 random_choose(uint32 top) {
+    if (0 == top)
+        return 0;
+    return (uint32)(rand() % top);
 }
 
-
-static void *wrap_malloc(int size)
-{
+static void *wrap_malloc(int size) {
     void *p = malloc(size);
 
     oc_utl_assert(p != NULL);
     return p;
 }
 
-
-Oc_xt_node* oc_xt_test_nd_alloc(Oc_wu *wu_p)
-{
+Oc_xt_node *oc_xt_test_nd_alloc(Oc_wu *wu_p) {
     Oc_xt_test_node *tnode_p;
 
     // simple checking for ref-counts
-    g_refcnt++;    
+    g_refcnt++;
 
     if (wu_p->po_id != 0)
         if (random_choose(2) == 0)
             oc_crt_yield_task();
-    
-    tnode_p = (struct Oc_xt_test_node*) wrap_malloc(sizeof(Oc_xt_test_node));
+
+    tnode_p = (struct Oc_xt_test_node *)wrap_malloc(sizeof(Oc_xt_test_node));
     memset(tnode_p, 0, sizeof(Oc_xt_test_node));
     oc_crt_init_rw_lock(&tnode_p->node.lock);
-    tnode_p->node.data = (char*) wrap_malloc(OC_XT_TEST_ND_SIZE);
+    tnode_p->node.data = (char *)wrap_malloc(OC_XT_TEST_ND_SIZE);
     tnode_p->node.disk_addr = fs_alloc();
     tnode_p->magic = MAGIC;
 
     // add the node into the virtual-disk
     vd_node_insert(tnode_p);
-    
+
     return &tnode_p->node;
 }
-     
-void oc_xt_test_nd_dealloc(Oc_wu *wu_p, uint64 addr)
-{
+
+void oc_xt_test_nd_dealloc(Oc_wu *wu_p, uint64 addr) {
     Oc_xt_test_node *tnode_p;
     char *data;
-    
+
     if (wu_p->po_id != 0)
         if (random_choose(2) == 0)
             oc_crt_yield_task();
 
     // extract the node fromt the table prior to removal
     tnode_p = vd_node_lookup(addr);
-    
+
     // remove the node from the virtual-disk
     vd_node_remove(addr);
 
@@ -202,15 +189,14 @@ void oc_xt_test_nd_dealloc(Oc_wu *wu_p, uint64 addr)
     data = tnode_p->node.data;
     tnode_p->node.data = NULL;
     tnode_p->node.disk_addr = 0;
-    
+
     free(data);
     free(tnode_p);
 }
 
-Oc_xt_node* oc_xt_test_nd_get(Oc_wu *wu_p, uint64 addr)
-{
+Oc_xt_node *oc_xt_test_nd_get(Oc_wu *wu_p, uint64 addr) {
     Oc_xt_test_node *tnode_p;
-    
+
     oc_utl_assert(addr != 0);
 
     if (wu_p->po_id != 0)
@@ -220,25 +206,26 @@ Oc_xt_node* oc_xt_test_nd_get(Oc_wu *wu_p, uint64 addr)
     g_refcnt++;
     tnode_p = vd_node_lookup(addr);
     if (NULL == tnode_p) {
-        printf("error, did not find a b-tree node at address=%Lu po=%lu\n",
-               addr, wu_p->po_id);
+        printf(
+            "error, did not find a b-tree node at address=%Lu po=%lu\n",
+            addr,
+            wu_p->po_id
+        );
         oc_utl_assert(0);
     }
     oc_utl_assert(MAGIC == tnode_p->magic);
     return &tnode_p->node;
 }
 
-void oc_xt_test_nd_release(Oc_wu *wu_p, Oc_xt_node *node_p)
-{
+void oc_xt_test_nd_release(Oc_wu *wu_p, Oc_xt_node *node_p) {
     g_refcnt--;
-    oc_utl_assert(g_refcnt>=0);
+    oc_utl_assert(g_refcnt >= 0);
 }
 
-void oc_xt_test_nd_mark_dirty(Oc_wu *wu_p, Oc_xt_node *node_p)
-{
+void oc_xt_test_nd_mark_dirty(Oc_wu *wu_p, Oc_xt_node *node_p) {
     Oc_xt_test_node *tnode_p;
     uint64 new_addr;
-    
+
     if (random_choose(4) != 0)
         return;
 
@@ -252,9 +239,9 @@ void oc_xt_test_nd_mark_dirty(Oc_wu *wu_p, Oc_xt_node *node_p)
 
     // This is a non-root node, move it
     new_addr = fs_alloc();
-//    printf("po_id=%d, moving address %Lu->%Lu\n", wu_p->po_id, node_p->lba, new_addr);
-//    fflush(stdout);
-    
+    //    printf("po_id=%d, moving address %Lu->%Lu\n", wu_p->po_id, node_p->lba, new_addr);
+    //    fflush(stdout);
+
     tnode_p = vd_node_lookup(node_p->disk_addr);
     vd_node_remove(node_p->disk_addr);
     node_p->disk_addr = new_addr;
@@ -263,14 +250,12 @@ void oc_xt_test_nd_mark_dirty(Oc_wu *wu_p, Oc_xt_node *node_p)
 
 /**********************************************************************/
 
-int  oc_xt_test_nd_get_refcount(void)
-{
+int oc_xt_test_nd_get_refcount(void) {
     return g_refcnt;
 }
 
 /**********************************************************************/
 
-void oc_xt_test_nd_init(void)
-{
+void oc_xt_test_nd_init(void) {
     vd_create();
 }

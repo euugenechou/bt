@@ -42,6 +42,7 @@
 void oc_bpt_op_output_dot_b(
     struct Oc_wu *wu_p,
     struct Oc_bpt_state *s_p,
-    char *tag_p); 
+    char *tag_p
+);
 
 #endif

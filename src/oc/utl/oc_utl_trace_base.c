@@ -43,20 +43,23 @@
 #include "oc_utl.h"
 /****************************************************************************/
 #if OC_DEBUG
-static void oc_utl_trace_full( bool check_thrd_id_i,
-                               Pl_trace_base_tag tag_i,
-                               int level,
-                               Oc_wu *wu_pi,
-                               const char *fmt_p,
-                               va_list args );
+static void oc_utl_trace_full(
+    bool check_thrd_id_i,
+    Pl_trace_base_tag tag_i,
+    int level,
+    Oc_wu *wu_pi,
+    const char *fmt_p,
+    va_list args
+);
 
-void oc_utl_trace_base_wu( bool check_thrd_id_i,
-                           Pl_trace_base_tag tag_i,
-                           int level,
-                           Oc_wu *wu_pi,
-                           const char *fmt_p,
-                           ... )
-{
+void oc_utl_trace_base_wu(
+    bool check_thrd_id_i,
+    Pl_trace_base_tag tag_i,
+    int level,
+    Oc_wu *wu_pi,
+    const char *fmt_p,
+    ...
+) {
     va_list args;
 
     va_start(args, fmt_p);
@@ -64,36 +67,37 @@ void oc_utl_trace_base_wu( bool check_thrd_id_i,
     va_end(args);
 }
 
-void oc_utl_trace_base_wu_lvl(bool check_thrd_id_i,
-                              Pl_trace_base_tag tag_i,
-                              int level,
-                              struct Oc_wu *wu_pi,
-                              const char *fmt_p,
-                              ...)
-{
+void oc_utl_trace_base_wu_lvl(
+    bool check_thrd_id_i,
+    Pl_trace_base_tag tag_i,
+    int level,
+    struct Oc_wu *wu_pi,
+    const char *fmt_p,
+    ...
+) {
     va_list args;
 
     va_start(args, fmt_p);
     oc_utl_trace_full(check_thrd_id_i, tag_i, level, wu_pi, fmt_p, args);
-    va_end(args);    
+    va_end(args);
 }
 
-void oc_utl_trace_full( bool check_thrd_id_i,
-                        Pl_trace_base_tag tag_i,
-                        int level,
-                        Oc_wu *wu_pi,
-                        const char *fmt_p,
-                        va_list args )
-{
+void oc_utl_trace_full(
+    bool check_thrd_id_i,
+    Pl_trace_base_tag tag_i,
+    int level,
+    Oc_wu *wu_pi,
+    const char *fmt_p,
+    va_list args
+) {
     uint32 req_id = 0;
     uint32 po_id = 0;
     static int oc_crt_thread_id = 0;
-    
+
     if (wu_pi) {
         req_id = wu_pi->req_id;
         po_id = wu_pi->po_id;
-    }
-    else {
+    } else {
         /* If there is no work-unit, we can't check
          * the correctness of the thread-id
         */
@@ -103,30 +107,31 @@ void oc_utl_trace_full( bool check_thrd_id_i,
     if (check_thrd_id_i) {
         // Read the co-routine thread_id, if it hasn't been read so far.
         if (0 == oc_crt_thread_id)
-            oc_crt_thread_id = oc_crt_get_thread ();
-        
+            oc_crt_thread_id = oc_crt_get_thread();
+
         // Make sure we are on the correct thread
         if (check_thrd_id_i) {
-            oc_utl_assert(0 == oc_crt_thread_id ||
-                          (int)pthread_self() == oc_crt_thread_id);
+            oc_utl_assert(
+                0 == oc_crt_thread_id || (int)pthread_self() == oc_crt_thread_id
+            );
             oc_crt_assert();
         }
     }
-    
+
     if (pl_trace_base_is_set(tag_i, level)) {
-        // We are assuming here that 100 bytes are sufficient here. 
+        // We are assuming here that 100 bytes are sufficient here.
         char buf[100];
-        
+
         vsnprintf(buf, 100, fmt_p, args);
-        pl_trace_base(tag_i,
-                  level,          // level
-                  "(req=%lu, po=%lu, %s)\n",
-                  req_id, 
-                  po_id,
-                  buf);
+        pl_trace_base(
+            tag_i,
+            level,  // level
+            "(req=%lu, po=%lu, %s)\n",
+            req_id,
+            po_id,
+            buf
+        );
     }
 }
 
 #endif
-
-    

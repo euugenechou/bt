@@ -38,11 +38,6 @@
 #ifndef OC_XT_OP_VALIDATE_H
 #define OC_XT_OP_VALIDATE_H
 
-bool oc_xt_op_validate_b(
-    struct Oc_wu *wu_p,
-    Oc_xt_state *s_p);
+bool oc_xt_op_validate_b(struct Oc_wu *wu_p, Oc_xt_state *s_p);
 
 #endif
-
-
-
